@@ -1,0 +1,145 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const bcrypt = require('bcryptjs');
+const cookieSession = require('cookie-session');
+const Database = require('better-sqlite3');
+const { Resend } = require('resend');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+if (!process.env.RESEND_API_KEY) {
+  console.warn('\n⚠️  RESEND_API_KEY manquant dans .env — les emails ne seront pas envoyés.\n');
+}
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
+
+const db = new Database(path.join(__dirname, 'data', 'vickydore.db'));
+db.pragma('journal_mode = WAL');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'client',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    service_name TEXT NOT NULL,
+    service_price_cents INTEGER NOT NULL,
+    booking_date TEXT NOT NULL,
+    booking_date_label TEXT NOT NULL,
+    booking_time TEXT NOT NULL,
+    payment_method TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'en_attente',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+`);
+
+const SERVICES = [
+  { name: 'Guidance Express', duration: '30 min', priceCents: 4000, priceLabel: '40,00 $' },
+  { name: 'Guidance Intuitive Personnalisée', duration: '60 min', priceCents: 6000, priceLabel: '60,00 $' },
+  { name: 'Petit Soin Énergétique', duration: '30 min', priceCents: 4000, priceLabel: '40,00 $' },
+  { name: 'Soin Énergétique Complet', duration: '60 min', priceCents: 6000, priceLabel: '60,00 $' },
+];
+
+function ensureAdminAccount() {
+  const adminEmail = (process.env.ADMIN_EMAIL || 'Vicky_dore@hotmail.com').toLowerCase();
+  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(adminEmail);
+  if (existing) return;
+
+  const password = process.env.ADMIN_PASSWORD || 'changez-moi-123';
+  const hash = bcrypt.hashSync(password, 10);
+  db.prepare(`INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'admin')`)
+    .run('Vicky Doré', adminEmail, hash);
+  console.log(`✦ Compte admin créé : ${adminEmail}`);
+}
+ensureAdminAccount();
+
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+app.use(cookieSession({
+  name: 'vickydore_session',
+  keys: [process.env.SESSION_SECRET || 'dev-secret-changez-moi'],
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+function requireAuth(req, res, next) {
+  if (!req.session.userId) return res.status(401).json({ error: 'Vous devez être connecté.' });
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.session.userId || req.session.role !== 'admin') {
+    return res.status(403).json({ error: "Accès réservé à l'administration." });
+  }
+  next();
+}
+
+function publicUser(row) {
+  return { id: row.id, name: row.name, email: row.email, role: row.role };
+}
+
+app.post('/api/auth/register', (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) return res.status(400).json({ error: 'Champs manquants.' });
+    if (password.length < 6) return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 6 caractères.' });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(normalizedEmail);
+    if (existing) return res.status(409).json({ error: 'Un compte existe déjà avec ce courriel.' });
+
+    const hash = bcrypt.hashSync(password, 10);
+    const result = db.prepare(`INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'client')`)
+      .run(name.trim(), normalizedEmail, hash);
+
+    const user = { id: result.lastInsertRowid, name: name.trim(), email: normalizedEmail, role: 'client' };
+    req.session.userId = user.id;
+    req.session.role = user.role;
+    res.json({ user });
+  } catch (err) {
+    console.error('Erreur register :', err.message);
+    res.status(500).json({ error: "Erreur serveur lors de l'inscription." });
+  }
+});
+
+app.post('/api/auth/login', (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Champs manquants.' });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const row = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail);
+    if (!row) return res.status(401).json({ error: 'Courriel ou mot de passe incorrect.' });
+
+    const valid = bcrypt.compareSync(password, row.password_hash);
+    if (!valid) return res.status(401).json({ error: 'Courriel ou mot de passe incorrect.' });
+
+    req.session.userId = row.id;
+    req.session.role = row.role;
+    res.json({ user: publicUser(row) });
+  } catch (err) {
+    console.error('Erreur login :', err.message);
+    res.status(500).json({ error: 'Erreur serveur lors de la connexion.' });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  req.session = null;
+  res.json({ success: true });
+});
+
+app.get('/api/auth/me', (req, res) => {
+  if (!req.session.userId) return res.json({ user: null });
+  const row = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+  if (!row) return res.json({ user: null });
