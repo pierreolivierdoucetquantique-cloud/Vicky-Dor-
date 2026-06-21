@@ -1237,6 +1237,7 @@
           <button class="admin-tab-btn" data-tab="services" onclick="switchAdminTab('services')">Services</button>
           <button class="admin-tab-btn" data-tab="availability" onclick="switchAdminTab('availability')">Disponibilités</button>
           <button class="admin-tab-btn" data-tab="testimonials" onclick="switchAdminTab('testimonials')">Témoignages</button>
+          <button class="admin-tab-btn" data-tab="messages" onclick="switchAdminTab('messages')">Messages<span id="adminMessagesUnreadBadge" style="display:none;margin-left:6px;background:#B3261E;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;"></span></button>
           <button class="admin-tab-btn" data-tab="promo" onclick="switchAdminTab('promo')">Bannière promo</button>
         </div>
       </div>
@@ -1351,6 +1352,21 @@
         </div>
         <div id="adminTestimonialsList" style="display:flex;flex-direction:column;gap:16px;"></div>
         <p id="adminTestimonialsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucun témoignage pour le moment.</p>
+      </div>
+    </section>
+
+    <!-- ===== Onglet : Messages de contact ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-messages">
+      <div class="container" style="max-width:920px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="eyebrow">Contact</span>
+          <h2 class="section-title" style="font-size:28px;">Messages reçus</h2>
+          <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
+            Tous les messages envoyés depuis la page Contact apparaissent ici, qu'ils aient été reçus par courriel ou non.
+          </p>
+        </div>
+        <div id="adminMessagesList" style="display:flex;flex-direction:column;gap:16px;"></div>
+        <p id="adminMessagesEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucun message pour le moment.</p>
       </div>
     </section>
 
@@ -1707,6 +1723,7 @@
     services: () => loadAdminServices(),
     availability: () => loadAdminAvailability(),
     testimonials: () => loadAdminTestimonials(),
+    messages: () => loadAdminMessages(),
     promo: () => loadAdminPromo(),
   };
 
@@ -1733,6 +1750,25 @@
     adminTabsLoadedOnce.clear();
     showPage('admin');
     switchAdminTab('bookings');
+    refreshUnreadMessagesBadge();
+  }
+
+  // Met à jour seulement le badge "non lus" sur l'onglet Messages, sans
+  // afficher la liste complète — utile pour voir d'un coup d'œil s'il y a
+  // du nouveau avant même de cliquer sur l'onglet.
+  async function refreshUnreadMessagesBadge() {
+    const badgeEl = document.getElementById('adminMessagesUnreadBadge');
+    if (!badgeEl) return;
+    try {
+      const res = await fetch('/api/admin/contact-messages');
+      if (!res.ok) return;
+      const rows = await res.json();
+      const unreadCount = rows.filter(m => !m.is_read).length;
+      badgeEl.textContent = String(unreadCount);
+      badgeEl.style.display = unreadCount > 0 ? 'inline' : 'none';
+    } catch (e) {
+      // Échec silencieux : le badge reste simplement à son état précédent.
+    }
   }
 
   function showToast(message) {
@@ -3008,6 +3044,99 @@
       showToast('Témoignage supprimé.');
       loadAdminTestimonials();
       loadTestimonials();
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  // ================================================================
+  // MESSAGES DE CONTACT (admin)
+  // ================================================================
+
+  function formatMessageDate(isoLike) {
+    // Le champ created_at est stocké en UTC par SQLite (datetime('now')).
+    const d = new Date(isoLike.replace(' ', 'T') + 'Z');
+    if (Number.isNaN(d.getTime())) return isoLike;
+    return d.toLocaleString('fr-CA', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  async function loadAdminMessages() {
+    const listEl = document.getElementById('adminMessagesList');
+    const emptyEl = document.getElementById('adminMessagesEmpty');
+    const badgeEl = document.getElementById('adminMessagesUnreadBadge');
+    listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:var(--ink-500);">Chargement…</p>';
+
+    try {
+      const res = await fetch('/api/admin/contact-messages');
+      if (res.status === 403) {
+        listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Accès réservé à l\'administration.</p>';
+        return;
+      }
+      const rows = await res.json();
+
+      const unreadCount = rows.filter(m => !m.is_read).length;
+      if (badgeEl) {
+        badgeEl.textContent = String(unreadCount);
+        badgeEl.style.display = unreadCount > 0 ? 'inline' : 'none';
+      }
+
+      if (!rows.length) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+      }
+      emptyEl.style.display = 'none';
+
+      listEl.innerHTML = rows.map(m => `
+        <div class="glass-card" style="padding:24px;${m.is_read ? 'opacity:0.75;' : ''}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+            <div>
+              <div style="font-family:Georgia,serif;font-weight:600;">${escapeHtml(m.name)}</div>
+              <a href="mailto:${escapeHtml(m.email)}" style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--gold-600,#A87C2E);">${escapeHtml(m.email)}</a>
+              <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);margin-top:2px;">${formatMessageDate(m.created_at)}</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${m.is_read ? '' : '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#FFF3E0;color:#A87C2E;">NON LU</span>'}
+              ${m.email_sent
+                ? '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#E8F5E9;color:#2E7D32;">✓ Courriel envoyé</span>'
+                : '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#FDECEA;color:#B3261E;">⚠ Courriel non envoyé</span>'}
+            </div>
+          </div>
+          <p style="font-family:Georgia,serif;color:var(--ink-700);white-space:pre-wrap;margin-bottom:16px;">${escapeHtml(m.message)}</p>
+          <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="toggleMessageRead(${m.id}, ${m.is_read ? 'false' : 'true'})">${m.is_read ? 'Marquer comme non lu' : 'Marquer comme lu'}</button>
+            <button class="btn btn-outline btn-sm" onclick="deleteAdminMessage(${m.id})">Supprimer</button>
+          </div>
+        </div>
+      `).join('');
+    } catch (e) {
+      listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Erreur de chargement.</p>';
+    }
+  }
+
+  async function toggleMessageRead(id, isRead) {
+    try {
+      const res = await fetch(`/api/admin/contact-messages/${id}/read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isRead }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la mise à jour.');
+      loadAdminMessages();
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  async function deleteAdminMessage(id) {
+    try {
+      const res = await fetch(`/api/admin/contact-messages/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression.');
+
+      showToast('Message supprimé.');
+      loadAdminMessages();
     } catch (e) {
       showToast(e.message);
     }
