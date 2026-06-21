@@ -1246,6 +1246,19 @@
     <!-- ===== Onglet : Réservations ===== -->
     <section class="bg-beige admin-tab-panel" id="adminTab-bookings">
       <div class="container" style="max-width:920px;">
+        <div class="glass-card" style="padding:20px 24px;margin-bottom:20px;">
+          <h4 style="font-family:Georgia,serif;font-size:15px;font-weight:600;margin-bottom:6px;">📅 Synchroniser avec le calendrier de l'iPhone</h4>
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);margin-bottom:12px;">
+            Ajoutez ce lien une seule fois dans l'app Calendrier (Réglages → Comptes → Ajouter un compte → S'abonner à un calendrier). Seuls les rendez-vous <strong>confirmés</strong> apparaîtront, et les mises à jour se feront automatiquement.
+          </p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="copyCalendarFeedLink()">📋 Copier le lien d'abonnement</button>
+            <a id="calendarFeedWebcalLink" href="#" class="btn btn-outline btn-sm" style="text-decoration:none;">📱 Ouvrir sur l'iPhone</a>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+          <button class="btn btn-outline btn-sm" style="border-color:#B3261E;color:#B3261E;" onclick="clearBookingsHistory()">🗑️ Vider l'historique</button>
+        </div>
         <div id="adminBookingsList" style="display:flex;flex-direction:column;gap:16px;"></div>
         <p id="adminBookingsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucune réservation pour le moment.</p>
       </div>
@@ -1719,7 +1732,7 @@
   // ================================================================
 
   const ADMIN_TAB_LOADERS = {
-    bookings: () => loadAdminBookings(),
+    bookings: () => { loadAdminBookings(); loadCalendarFeedLink(); },
     services: () => loadAdminServices(),
     availability: () => loadAdminAvailability(),
     testimonials: () => loadAdminTestimonials(),
@@ -2714,6 +2727,34 @@
   // ESPACE ADMIN (Vicky voit toutes les réservations)
   // ================================================================
 
+  let cachedCalendarFeedUrls = null;
+
+  async function loadCalendarFeedLink() {
+    try {
+      const res = await fetch('/api/admin/calendar-feed-url');
+      if (!res.ok) return;
+      cachedCalendarFeedUrls = await res.json();
+      const link = document.getElementById('calendarFeedWebcalLink');
+      if (link) link.href = cachedCalendarFeedUrls.webcalUrl;
+    } catch (e) {
+      // Silencieux : ce n'est qu'un confort, pas une fonctionnalité critique.
+    }
+  }
+
+  async function copyCalendarFeedLink() {
+    if (!cachedCalendarFeedUrls) await loadCalendarFeedLink();
+    if (!cachedCalendarFeedUrls) {
+      showToast('Impossible de récupérer le lien pour le moment.');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(cachedCalendarFeedUrls.webcalUrl);
+      showToast('Lien copié ! Collez-le dans Calendrier sur l\'iPhone.');
+    } catch (e) {
+      showToast(cachedCalendarFeedUrls.webcalUrl);
+    }
+  }
+
   async function loadAdminBookings() {
     const listEl = document.getElementById('adminBookingsList');
     const emptyEl = document.getElementById('adminBookingsEmpty');
@@ -2755,6 +2796,27 @@
       }).join('');
     } catch (e) {
       listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Erreur de chargement.</p>';
+    }
+  }
+
+  async function clearBookingsHistory() {
+    const confirmed = confirm(
+      'Cette action supprimera définitivement tous les rendez-vous dont la date est déjà passée.\n\n' +
+      'Cette suppression est irréversible et aucune copie ne sera conservée.\n\n' +
+      'Voulez-vous continuer ?'
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch('/api/admin/bookings/history', { method: 'DELETE' });
+      if (!res.ok) throw new Error('Erreur lors de la suppression de l\'historique.');
+      const data = await res.json();
+      showToast(data.deletedCount > 0
+        ? `Historique vidé (${data.deletedCount} rendez-vous supprimé${data.deletedCount > 1 ? 's' : ''}).`
+        : 'Aucun rendez-vous passé à supprimer.');
+      loadAdminBookings();
+    } catch (e) {
+      showToast(e.message);
     }
   }
 
