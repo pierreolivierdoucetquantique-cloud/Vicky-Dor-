@@ -918,10 +918,17 @@ async function sendConfirmationEmails({ clientName, clientEmail, service, bookin
   `;
 
   const fromAddress = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-  const adminAddress = process.env.ADMIN_EMAIL || 'Vicky_dore@hotmail.com';
+const adminAddress = process.env.ADMIN_EMAIL || 'Vicky_dore@hotmail.com';
 
-  await resend.emails.send({ from: fromAddress, to: clientEmail, subject: 'Votre réservation — Vicky Doré', html: clientHtml });
-  await resend.emails.send({ from: fromAddress, to: adminAddress, subject: `Nouvelle réservation : ${service.name}`, html: adminHtml });
+console.log('🔎 [DEBUG] EMAIL_FROM utilisé :', fromAddress);
+console.log('🔎 [DEBUG] Envoi au client :', clientEmail);
+console.log('🔎 [DEBUG] Envoi à l\'admin :', adminAddress);
+
+const resultClient = await resend.emails.send({ from: fromAddress, to: clientEmail, subject: 'Votre réservation — Vicky Doré', html: clientHtml });
+console.log('🔎 [DEBUG] Réponse Resend (client) :', JSON.stringify(resultClient));
+
+const resultAdmin = await resend.emails.send({ from: fromAddress, to: adminAddress, subject: `Nouvelle réservation : ${service.name}`, html: adminHtml });
+console.log('🔎 [DEBUG] Réponse Resend (admin) :', JSON.stringify(resultAdmin));
 }
 
 // ============================================================
