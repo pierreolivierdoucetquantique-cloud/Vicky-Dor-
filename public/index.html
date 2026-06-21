@@ -944,7 +944,7 @@
           <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:24px;">Coordonnées</h3>
           <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
             <span style="width:40px;height:40px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;">✉️</span>
-            <a href="mailto:Vicky_dore@hotmail.com" style="color:var(--ink-700);text-decoration:none;font-family:-apple-system,sans-serif;font-size:14px;">Vicky_dore@hotmail.com</a>
+            <a href="mailto:message_VD@hotmail.com" style="color:var(--ink-700);text-decoration:none;font-family:-apple-system,sans-serif;font-size:14px;">message_VD@hotmail.com</a>
           </div>
           <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
             <span style="width:40px;height:40px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;">
@@ -959,11 +959,17 @@
             <a href="https://www.facebook.com/share/181CBZpsus/" target="_blank" rel="noopener noreferrer" style="color:var(--ink-700);text-decoration:none;font-family:-apple-system,sans-serif;font-size:14px;">Vicky Doré sur Facebook</a>
           </div>
         </div>
-        <div class="glass-card form-card" style="margin:0;">
-          <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:20px;">Envoyer un message</h3>
-          <div class="form-group"><label>Nom complet</label><input type="text" id="contactNameInput" placeholder="Votre nom"></div>
-          <div class="form-group"><label>Adresse courriel</label><input type="email" id="contactEmailInput" placeholder="vous@exemple.com"></div>
-          <div class="form-group"><label>Message</label><textarea id="contactMessageInput" placeholder="Votre message..."></textarea></div>
+        <div class="glass-card form-card" style="margin:0;" id="contactFormLoggedOut">
+          <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:6px;">Envoyer un message</h3>
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:20px;">Connectez-vous pour écrire à Vicky et suivre sa réponse directement ici.</p>
+          <a class="btn btn-default btn-full" onclick="showPage('connexion')">Se connecter pour écrire</a>
+        </div>
+        <div class="glass-card form-card" style="margin:0;display:none;" id="contactFormLoggedIn">
+          <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:6px;">Votre conversation avec Vicky</h3>
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;">Vicky vous répondra directement ici, et vous recevrez aussi un courriel.</p>
+          <div id="conversationThread" style="display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto;margin-bottom:16px;padding-right:4px;"></div>
+          <p id="conversationEmpty" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;">Vous n'avez pas encore écrit à Vicky. Posez votre question ci-dessous !</p>
+          <div class="form-group"><label>Votre message</label><textarea id="contactMessageInput" placeholder="Votre message..."></textarea></div>
           <p id="contactFormError" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
           <button class="btn btn-default btn-full" id="contactSubmitBtn" onclick="submitContactForm()">Envoyer le message</button>
         </div>
@@ -1160,7 +1166,7 @@
               <span style="font-size:22px;">🏦</span>
               <div style="font-family:-apple-system,sans-serif;font-size:14px;line-height:1.7;">
                 <p style="margin:0 0 8px;">Veuillez envoyer un virement Interac à l'adresse suivante :</p>
-                <p style="margin:0 0 8px;"><strong style="font-size:15px;">Vicky_dore@hotmail.com</strong></p>
+                <p style="margin:0 0 8px;"><strong style="font-size:15px;">paiement.vickydore@hotmail.com</strong></p>
                 <p style="margin:0 0 8px;">Montant à envoyer : <strong id="paymentAmountLabel"></strong></p>
                 <p style="margin:0;color:var(--ink-500);font-size:13px;">Indiquez votre nom et le service réservé dans le message du virement, si possible. Votre rendez-vous sera confirmé manuellement par Vicky dès réception du paiement.</p>
               </div>
@@ -1175,7 +1181,7 @@
           <div class="booking-panel" data-panel="5" style="display:none;">
             <h2 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:20px;">Récapitulatif de votre réservation</h2>
             <div id="bookingSummary" style="font-family:-apple-system,sans-serif;font-size:14px;display:flex;flex-direction:column;gap:12px;"></div>
-            <div class="note-banner" id="interacNote">Votre rendez-vous restera en attente jusqu'à ce que Vicky confirme la réception de votre virement Interac à <strong>Vicky_dore@hotmail.com</strong>.</div>
+            <div class="note-banner" id="interacNote">Votre rendez-vous restera en attente jusqu'à ce que Vicky confirme la réception de votre virement Interac à <strong>paiement.vickydore@hotmail.com</strong>.</div>
           </div>
 
           <!-- ÉTAPE 6 : CONFIRMATION -->
@@ -1368,18 +1374,31 @@
       </div>
     </section>
 
-    <!-- ===== Onglet : Messages de contact ===== -->
+    <!-- ===== Onglet : Conversations ===== -->
     <section style="background:#fff;" class="admin-tab-panel" id="adminTab-messages">
       <div class="container" style="max-width:920px;">
         <div style="text-align:center;margin-bottom:32px;">
           <span class="eyebrow">Contact</span>
-          <h2 class="section-title" style="font-size:28px;">Messages reçus</h2>
+          <h2 class="section-title" style="font-size:28px;">Conversations</h2>
           <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
-            Tous les messages envoyés depuis la page Contact apparaissent ici, qu'ils aient été reçus par courriel ou non.
+            Chaque cliente connectée dispose d'un seul fil de conversation continu avec vous.
           </p>
         </div>
-        <div id="adminMessagesList" style="display:flex;flex-direction:column;gap:16px;"></div>
-        <p id="adminMessagesEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucun message pour le moment.</p>
+        <div id="adminConversationsList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <p id="adminConversationsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucune conversation pour le moment.</p>
+
+        <div id="adminConversationDetail" style="display:none;margin-top:28px;border-top:1px solid var(--rose-100);padding-top:24px;">
+          <button class="btn btn-outline btn-sm" style="margin-bottom:16px;" onclick="closeAdminConversation()">← Retour à la liste</button>
+          <h3 id="adminConversationClientName" class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:4px;"></h3>
+          <p id="adminConversationClientEmail" style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;"></p>
+          <div id="adminConversationThread" style="display:flex;flex-direction:column;gap:10px;max-height:380px;overflow-y:auto;margin-bottom:16px;padding-right:4px;"></div>
+          <div class="form-group"><label>Votre réponse</label><textarea id="adminReplyInput" placeholder="Votre réponse..."></textarea></div>
+          <p id="adminReplyError" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-default" id="adminReplySubmitBtn" onclick="submitAdminReply()">Répondre</button>
+            <button class="btn btn-outline" style="border-color:#B3261E;color:#B3261E;" onclick="deleteAdminConversation()">Supprimer la conversation</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1439,7 +1458,7 @@
           <a href="https://www.tiktok.com/@vickyyydore" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="TikTok de Vicky Doré">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82a4.28 4.28 0 0 1-3.16-1.4 4.28 4.28 0 0 1-1.12-2.92h-3.1v13.86a2.6 2.6 0 1 1-1.86-2.49V9.83a5.6 5.6 0 1 0 4.86 5.54V9.46a7.3 7.3 0 0 0 4.38 1.46V7.79a4.3 4.3 0 0 1-0-1.97Z"/></svg>
           </a>
-          <a href="mailto:Vicky_dore@hotmail.com" class="social-btn" aria-label="Envoyer un courriel à Vicky Doré">
+          <a href="mailto:message_VD@hotmail.com" class="social-btn" aria-label="Envoyer un courriel à Vicky Doré">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 5h18v14H3z"/><path d="m3 5 9 7 9-7"/></svg>
           </a>
         </div>
@@ -1457,7 +1476,7 @@
       <div class="footer-col">
         <h4>Contact</h4>
         <ul>
-          <li><a href="mailto:Vicky_dore@hotmail.com">Vicky_dore@hotmail.com</a></li>
+          <li><a href="mailto:message_VD@hotmail.com">message_VD@hotmail.com</a></li>
           <li><a href="https://www.tiktok.com/@vickyyydore" target="_blank" rel="noopener noreferrer">TikTok</a></li>
           <li><a href="https://www.facebook.com/share/181CBZpsus/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
         </ul>
@@ -1586,29 +1605,43 @@
   // FORMULAIRE DE CONTACT (page Contact)
   // ================================================================
 
+  function renderConversationThread(messages) {
+    const threadEl = document.getElementById('conversationThread');
+    const emptyEl = document.getElementById('conversationEmpty');
+    if (!messages.length) {
+      threadEl.innerHTML = '';
+      emptyEl.style.display = 'block';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    threadEl.innerHTML = messages.map(m => {
+      const isAdmin = m.sender === 'admin';
+      return `<div style="align-self:${isAdmin ? 'flex-start' : 'flex-end'};max-width:80%;background:${isAdmin ? 'var(--rose-100)' : 'var(--champagne-100, #F3E9D8)'};border-radius:14px;padding:10px 14px;">
+        <p style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--ink-500);margin-bottom:4px;">${isAdmin ? 'Vicky' : 'Vous'}</p>
+        <p style="font-family:-apple-system,sans-serif;font-size:14px;white-space:pre-wrap;margin:0;">${escapeHtml(m.message)}</p>
+      </div>`;
+    }).join('');
+    threadEl.scrollTop = threadEl.scrollHeight;
+  }
+
+  async function loadConversation() {
+    try {
+      const res = await fetch('/api/conversation');
+      if (!res.ok) return;
+      const data = await res.json();
+      renderConversationThread(data.messages || []);
+    } catch (e) {
+      // Silencieux : le fil restera vide, l'envoi d'un nouveau message reste possible.
+    }
+  }
+
   async function submitContactForm() {
-    const nameEl = document.getElementById('contactNameInput');
-    const emailEl = document.getElementById('contactEmailInput');
     const messageEl = document.getElementById('contactMessageInput');
     const errorEl = document.getElementById('contactFormError');
     const btnEl = document.getElementById('contactSubmitBtn');
     errorEl.style.display = 'none';
 
-    const name = nameEl.value.trim();
-    const email = emailEl.value.trim();
     const message = messageEl.value.trim();
-
-    if (!name) {
-      errorEl.textContent = 'Veuillez indiquer votre nom.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !EMAIL_REGEX.test(email)) {
-      errorEl.textContent = 'Veuillez indiquer une adresse courriel valide.';
-      errorEl.style.display = 'block';
-      return;
-    }
     if (!message) {
       errorEl.textContent = 'Veuillez écrire un message avant d\'envoyer.';
       errorEl.style.display = 'block';
@@ -1620,18 +1653,17 @@
     btnEl.textContent = 'Envoi en cours…';
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/api/conversation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ message }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'envoi du message.');
 
-      nameEl.value = '';
-      emailEl.value = '';
       messageEl.value = '';
       showToast('Message envoyé ! Vicky vous répondra dès que possible.');
+      loadConversation();
     } catch (e) {
       errorEl.textContent = e.message;
       errorEl.style.display = 'block';
@@ -1644,7 +1676,7 @@
 
   const FAQS = [
     { q: "Comment réserver une séance ?", a: "Rendez-vous sur la page « Réserver », choisissez le service qui vous convient, puis sélectionnez une date et une heure disponibles dans le calendrier. Vous devrez créer un compte ou vous connecter pour finaliser la réservation." },
-    { q: "Comment puis-je payer ma séance ?", a: "Le paiement se fait par virement Interac à Vicky_dore@hotmail.com. Une fois le virement envoyé, votre rendez-vous reste en attente jusqu'à ce que Vicky confirme manuellement la réception du paiement." },
+    { q: "Comment puis-je payer ma séance ?", a: "Le paiement se fait par virement Interac à paiement.vickydore@hotmail.com. Une fois le virement envoyé, votre rendez-vous reste en attente jusqu'à ce que Vicky confirme manuellement la réception du paiement." },
     { q: "Puis-je modifier mon rendez-vous ?", a: "Oui. Depuis votre profil, dans la section « Mes rendez-vous », vous pouvez reporter votre séance à une date ultérieure tant que votre rendez-vous n'a pas encore eu lieu." },
     { q: "Comment se déroule une séance ?", a: "Chaque séance commence par un moment d'écoute pour bien comprendre votre besoin du moment. Selon le service choisi, elle se poursuit par une guidance intuitive (avec ou sans tirage de cartes) ou par un soin énergétique, dans un climat calme et bienveillant." },
     { q: "Puis-je annuler ma réservation ?", a: "Oui, vous pouvez annuler votre rendez-vous directement depuis votre profil avant la date prévue. Un courriel de confirmation d'annulation vous sera envoyé automatiquement." }
@@ -1773,10 +1805,10 @@
     const badgeEl = document.getElementById('adminMessagesUnreadBadge');
     if (!badgeEl) return;
     try {
-      const res = await fetch('/api/admin/contact-messages');
+      const res = await fetch('/api/admin/conversations');
       if (!res.ok) return;
       const rows = await res.json();
-      const unreadCount = rows.filter(m => !m.is_read).length;
+      const unreadCount = rows.filter(c => c.has_unread_for_admin).length;
       badgeEl.textContent = String(unreadCount);
       badgeEl.style.display = unreadCount > 0 ? 'inline' : 'none';
     } catch (e) {
@@ -2125,6 +2157,14 @@
     if (testimonialLoggedOut && testimonialLoggedIn) {
       testimonialLoggedOut.style.display = isLoggedIn ? 'none' : 'block';
       testimonialLoggedIn.style.display = isLoggedIn ? 'block' : 'none';
+    }
+
+    const contactLoggedOut = document.getElementById('contactFormLoggedOut');
+    const contactLoggedIn = document.getElementById('contactFormLoggedIn');
+    if (contactLoggedOut && contactLoggedIn) {
+      contactLoggedOut.style.display = isLoggedIn ? 'none' : 'block';
+      contactLoggedIn.style.display = isLoggedIn ? 'block' : 'none';
+      if (isLoggedIn) loadConversation();
     }
   }
 
@@ -2583,7 +2623,7 @@
 
     document.getElementById('confirmationTitle').textContent = 'Réservation en attente de virement';
     document.getElementById('confirmationMessage').textContent =
-      'Votre rendez-vous est réservé. Vicky vérifiera la réception de votre virement Interac à Vicky_dore@hotmail.com et confirmera votre rendez-vous. Un courriel récapitulatif vient de vous être envoyé.';
+      'Votre rendez-vous est réservé. Vicky vérifiera la réception de votre virement Interac à paiement.vickydore@hotmail.com et confirmera votre rendez-vous. Un courriel récapitulatif vient de vous être envoyé.';
   }
 
   async function bookingGoNext() {
@@ -3112,31 +3152,27 @@
   }
 
   // ================================================================
-  // MESSAGES DE CONTACT (admin)
+  // CONVERSATIONS (admin)
   // ================================================================
 
-  function formatMessageDate(isoLike) {
-    // Le champ created_at est stocké en UTC par SQLite (datetime('now')).
-    const d = new Date(isoLike.replace(' ', 'T') + 'Z');
-    if (Number.isNaN(d.getTime())) return isoLike;
-    return d.toLocaleString('fr-CA', { dateStyle: 'medium', timeStyle: 'short' });
-  }
+  let currentAdminConversationId = null;
 
   async function loadAdminMessages() {
-    const listEl = document.getElementById('adminMessagesList');
-    const emptyEl = document.getElementById('adminMessagesEmpty');
+    const listEl = document.getElementById('adminConversationsList');
+    const emptyEl = document.getElementById('adminConversationsEmpty');
     const badgeEl = document.getElementById('adminMessagesUnreadBadge');
     listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:var(--ink-500);">Chargement…</p>';
+    document.getElementById('adminConversationDetail').style.display = 'none';
 
     try {
-      const res = await fetch('/api/admin/contact-messages');
+      const res = await fetch('/api/admin/conversations');
       if (res.status === 403) {
         listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Accès réservé à l\'administration.</p>';
         return;
       }
       const rows = await res.json();
 
-      const unreadCount = rows.filter(m => !m.is_read).length;
+      const unreadCount = rows.filter(c => c.has_unread_for_admin).length;
       if (badgeEl) {
         badgeEl.textContent = String(unreadCount);
         badgeEl.style.display = unreadCount > 0 ? 'inline' : 'none';
@@ -3149,25 +3185,15 @@
       }
       emptyEl.style.display = 'none';
 
-      listEl.innerHTML = rows.map(m => `
-        <div class="glass-card" style="padding:24px;${m.is_read ? 'opacity:0.75;' : ''}">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+      listEl.innerHTML = rows.map(c => `
+        <div class="glass-card" style="padding:18px 22px;cursor:pointer;${c.has_unread_for_admin ? '' : 'opacity:0.8;'}" onclick="openAdminConversation(${c.id})">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
             <div>
-              <div style="font-family:Georgia,serif;font-weight:600;">${escapeHtml(m.name)}</div>
-              <a href="mailto:${escapeHtml(m.email)}" style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--gold-600,#A87C2E);">${escapeHtml(m.email)}</a>
-              <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);margin-top:2px;">${formatMessageDate(m.created_at)}</div>
+              <div style="font-family:Georgia,serif;font-weight:600;">${escapeHtml(c.client_name)}</div>
+              <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);margin-top:2px;">${escapeHtml(c.last_sender === 'admin' ? 'Vous : ' : '')}${escapeHtml((c.last_message || '').slice(0, 80))}${(c.last_message || '').length > 80 ? '…' : ''}</div>
+              <div style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--ink-500);margin-top:4px;">${formatMessageDate(c.updated_at)}</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              ${m.is_read ? '' : '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#FFF3E0;color:#A87C2E;">NON LU</span>'}
-              ${m.email_sent
-                ? '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#E8F5E9;color:#2E7D32;">✓ Courriel envoyé</span>'
-                : '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#FDECEA;color:#B3261E;">⚠ Courriel non envoyé</span>'}
-            </div>
-          </div>
-          <p style="font-family:Georgia,serif;color:var(--ink-700);white-space:pre-wrap;margin-bottom:16px;">${escapeHtml(m.message)}</p>
-          <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-outline btn-sm" onclick="toggleMessageRead(${m.id}, ${m.is_read ? 'false' : 'true'})">${m.is_read ? 'Marquer comme non lu' : 'Marquer comme lu'}</button>
-            <button class="btn btn-outline btn-sm" onclick="deleteAdminMessage(${m.id})">Supprimer</button>
+            ${c.has_unread_for_admin ? '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#FFF3E0;color:#A87C2E;white-space:nowrap;">NOUVEAU</span>' : ''}
           </div>
         </div>
       `).join('');
@@ -3176,28 +3202,95 @@
     }
   }
 
-  async function toggleMessageRead(id, isRead) {
+  function formatMessageDate(isoLike) {
+    // Le champ created_at/updated_at est stocké en UTC par SQLite (datetime('now')).
+    const d = new Date(isoLike.replace(' ', 'T') + 'Z');
+    if (Number.isNaN(d.getTime())) return isoLike;
+    return d.toLocaleString('fr-CA', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  function renderAdminConversationThread(messages) {
+    const threadEl = document.getElementById('adminConversationThread');
+    threadEl.innerHTML = messages.map(m => {
+      const isAdmin = m.sender === 'admin';
+      return `<div style="align-self:${isAdmin ? 'flex-end' : 'flex-start'};max-width:80%;background:${isAdmin ? 'var(--champagne-100,#F3E9D8)' : 'var(--rose-100)'};border-radius:14px;padding:10px 14px;">
+        <p style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--ink-500);margin-bottom:4px;">${isAdmin ? 'Vous' : escapeHtml(m.sender === 'client' ? 'Cliente' : m.sender)} · ${formatMessageDate(m.created_at)}</p>
+        <p style="font-family:-apple-system,sans-serif;font-size:14px;white-space:pre-wrap;margin:0;">${escapeHtml(m.message)}</p>
+      </div>`;
+    }).join('');
+    threadEl.scrollTop = threadEl.scrollHeight;
+  }
+
+  async function openAdminConversation(id) {
+    currentAdminConversationId = id;
     try {
-      const res = await fetch(`/api/admin/contact-messages/${id}/read`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isRead }),
-      });
+      const res = await fetch(`/api/admin/conversations/${id}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur lors de la mise à jour.');
-      loadAdminMessages();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors du chargement de la conversation.');
+
+      document.getElementById('adminConversationClientName').textContent = data.conversation.client_name;
+      document.getElementById('adminConversationClientEmail').textContent = data.conversation.client_email;
+      renderAdminConversationThread(data.messages);
+      document.getElementById('adminReplyInput').value = '';
+      document.getElementById('adminReplyError').style.display = 'none';
+      document.getElementById('adminConversationDetail').style.display = 'block';
+      refreshUnreadMessagesBadge();
     } catch (e) {
       showToast(e.message);
     }
   }
 
-  async function deleteAdminMessage(id) {
+  function closeAdminConversation() {
+    currentAdminConversationId = null;
+    document.getElementById('adminConversationDetail').style.display = 'none';
+  }
+
+  async function submitAdminReply() {
+    if (!currentAdminConversationId) return;
+    const inputEl = document.getElementById('adminReplyInput');
+    const errorEl = document.getElementById('adminReplyError');
+    const btnEl = document.getElementById('adminReplySubmitBtn');
+    errorEl.style.display = 'none';
+
+    const message = inputEl.value.trim();
+    if (!message) {
+      errorEl.textContent = 'Veuillez écrire une réponse avant d\'envoyer.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    btnEl.disabled = true;
     try {
-      const res = await fetch(`/api/admin/contact-messages/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/conversations/${currentAdminConversationId}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'envoi de la réponse.');
+
+      inputEl.value = '';
+      showToast('Réponse envoyée.');
+      openAdminConversation(currentAdminConversationId);
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.style.display = 'block';
+    } finally {
+      btnEl.disabled = false;
+    }
+  }
+
+  async function deleteAdminConversation() {
+    if (!currentAdminConversationId) return;
+    const confirmed = confirm('Supprimer définitivement cette conversation et tous ses messages ?');
+    if (!confirmed) return;
+    try {
+      const res = await fetch(`/api/admin/conversations/${currentAdminConversationId}`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression.');
 
-      showToast('Message supprimé.');
+      showToast('Conversation supprimée.');
+      closeAdminConversation();
       loadAdminMessages();
     } catch (e) {
       showToast(e.message);
