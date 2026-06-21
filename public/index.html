@@ -146,6 +146,24 @@
   .btn-lg { padding: 15px 38px; font-size: 15px; }
   .btn-full { width: 100%; }
 
+  .admin-tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 18px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-500);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .admin-tab-btn:hover { color: var(--ink-700); }
+  .admin-tab-btn.active { color: var(--gold-600, #A87C2E); border-bottom-color: var(--gold-500, #D4B468); }
+  .admin-tab-panel { display: none; }
+  .admin-tab-panel.active { display: block; }
+
   .menu-toggle {
     display: none;
     background: none;
@@ -674,7 +692,7 @@
     </div>
     <div class="nav-actions" id="navActionsLoggedIn" style="display:none;">
       <a class="btn btn-outline btn-sm" id="navMyBookingsLink" onclick="showPage('mes-rendez-vous')">Mes rendez-vous</a>
-      <a class="btn btn-outline btn-sm" id="navAdminLink" style="display:none;" onclick="loadAdminBookings(); loadAdminServices(); loadAdminAvailability(); loadAdminPromo(); showPage('admin')">Admin</a>
+      <a class="btn btn-outline btn-sm" id="navAdminLink" style="display:none;" onclick="openAdminSpace()">Admin</a>
       <a class="btn btn-outline btn-sm" onclick="handleLogout()">Déconnexion</a>
       <a class="btn btn-default btn-sm" onclick="showPage('reserver')">Réserver maintenant</a>
     </div>
@@ -876,12 +894,22 @@
     <section class="bg-beige">
       <div class="container">
         <div class="testimonials-grid" id="testimonialsGridFull" style="margin-bottom:56px;"></div>
-        <div class="glass-card form-card">
+        <div class="glass-card form-card" id="testimonialFormLoggedOut">
           <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:6px;">Partagez votre expérience</h3>
           <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:20px;">Connectez-vous pour laisser un témoignage après votre séance.</p>
           <div class="stars" style="font-size:24px;margin-bottom:16px;">★★★★★</div>
           <textarea placeholder="Décrivez votre expérience..." disabled></textarea>
           <a class="btn btn-default btn-full" style="margin-top:16px;" onclick="showPage('connexion')">Se connecter pour témoigner</a>
+        </div>
+        <div class="glass-card form-card" id="testimonialFormLoggedIn" style="display:none;">
+          <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:6px;">Partagez votre expérience</h3>
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:20px;">Votre témoignage sera publié après vérification par Vicky.</p>
+          <div class="stars" id="testimonialStarsInput" style="font-size:26px;margin-bottom:16px;cursor:pointer;letter-spacing:4px;">
+            <span class="star-input" data-value="1">★</span><span class="star-input" data-value="2">★</span><span class="star-input" data-value="3">★</span><span class="star-input" data-value="4">★</span><span class="star-input" data-value="5">★</span>
+          </div>
+          <textarea id="testimonialQuoteInput" placeholder="Décrivez votre expérience..." maxlength="1000"></textarea>
+          <p id="testimonialFormError" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-top:8px;"></p>
+          <button class="btn btn-default btn-full" style="margin-top:16px;" onclick="submitTestimonial()">Envoyer mon témoignage</button>
         </div>
       </div>
     </section>
@@ -933,10 +961,11 @@
         </div>
         <div class="glass-card form-card" style="margin:0;">
           <h3 class="font-serif" style="font-size:19px;font-weight:600;margin-bottom:20px;">Envoyer un message</h3>
-          <div class="form-group"><label>Nom complet</label><input type="text" placeholder="Votre nom"></div>
-          <div class="form-group"><label>Adresse courriel</label><input type="email" placeholder="vous@exemple.com"></div>
-          <div class="form-group"><label>Message</label><textarea placeholder="Votre message..."></textarea></div>
-          <button class="btn btn-default btn-full" onclick="showToast('Aperçu uniquement : formulaire non fonctionnel')">Envoyer le message</button>
+          <div class="form-group"><label>Nom complet</label><input type="text" id="contactNameInput" placeholder="Votre nom"></div>
+          <div class="form-group"><label>Adresse courriel</label><input type="email" id="contactEmailInput" placeholder="vous@exemple.com"></div>
+          <div class="form-group"><label>Message</label><textarea id="contactMessageInput" placeholder="Votre message..."></textarea></div>
+          <p id="contactFormError" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
+          <button class="btn btn-default btn-full" id="contactSubmitBtn" onclick="submitContactForm()">Envoyer le message</button>
         </div>
       </div>
     </section>
@@ -1197,32 +1226,77 @@
     <section class="gradient-hero">
       <div class="container text-center">
         <span class="eyebrow">Espace administration</span>
-        <h1 class="section-title">Toutes les réservations</h1>
+        <h1 class="section-title">Tableau de bord</h1>
       </div>
     </section>
-    <section class="bg-beige">
+
+    <section class="bg-beige" style="padding-top:24px;padding-bottom:0;">
+      <div class="container" style="max-width:920px;">
+        <div id="adminTabsBar" style="display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--ink-200,#ddd);padding-bottom:0;">
+          <button class="admin-tab-btn" data-tab="bookings" onclick="switchAdminTab('bookings')">Réservations</button>
+          <button class="admin-tab-btn" data-tab="services" onclick="switchAdminTab('services')">Services</button>
+          <button class="admin-tab-btn" data-tab="availability" onclick="switchAdminTab('availability')">Disponibilités</button>
+          <button class="admin-tab-btn" data-tab="testimonials" onclick="switchAdminTab('testimonials')">Témoignages</button>
+          <button class="admin-tab-btn" data-tab="promo" onclick="switchAdminTab('promo')">Bannière promo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Onglet : Réservations ===== -->
+    <section class="bg-beige admin-tab-panel" id="adminTab-bookings">
       <div class="container" style="max-width:920px;">
         <div id="adminBookingsList" style="display:flex;flex-direction:column;gap:16px;"></div>
         <p id="adminBookingsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucune réservation pour le moment.</p>
       </div>
     </section>
 
-    <section style="background:#fff;">
+    <!-- ===== Onglet : Services ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-services">
       <div class="container" style="max-width:920px;">
         <div style="text-align:center;margin-bottom:32px;">
           <span class="eyebrow">Catalogue</span>
           <h2 class="section-title" style="font-size:28px;">Gestion des services</h2>
           <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
-            Modifiez le prix ou la description d'un service. Les changements s'appliquent uniquement aux <strong>nouvelles réservations</strong> :
-            les rendez-vous déjà pris conservent le prix et la description en vigueur au moment de la réservation.
+            Ajoutez, modifiez ou retirez vos services (nom, durée, prix, description). Les changements s'appliquent uniquement aux <strong>nouvelles réservations</strong> :
+            les rendez-vous déjà pris conservent le nom et le prix en vigueur au moment de la réservation.
           </p>
+          <p id="adminServicesCount" style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:13px;margin-top:10px;font-weight:600;"></p>
         </div>
+
+        <div class="glass-card" style="padding:24px;margin-bottom:24px;">
+          <h4 style="font-family:Georgia,serif;font-size:17px;font-weight:600;margin-bottom:16px;">Ajouter un nouveau service</h4>
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:16px;margin-bottom:14px;">
+            <div>
+              <label style="display:block;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:6px;">Nom du service</label>
+              <input id="newServiceName" type="text" placeholder="Ex. Soin du Cœur" style="width:100%;padding:10px 12px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:-apple-system,sans-serif;font-size:14px;">
+            </div>
+            <div>
+              <label style="display:block;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:6px;">Durée</label>
+              <input id="newServiceDuration" type="text" placeholder="Ex. 45 min" style="width:100%;padding:10px 12px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:-apple-system,sans-serif;font-size:14px;">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:16px;margin-bottom:16px;">
+            <div>
+              <label style="display:block;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:6px;">Description</label>
+              <textarea id="newServiceDesc" rows="2" placeholder="Brève description visible par les clientes et clients" style="width:100%;padding:10px 12px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:-apple-system,sans-serif;font-size:14px;resize:vertical;"></textarea>
+            </div>
+            <div>
+              <label style="display:block;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:6px;">Prix ($ CAD)</label>
+              <input id="newServicePrice" type="text" inputmode="decimal" placeholder="40.00" style="width:100%;padding:10px 12px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:Georgia,serif;font-size:16px;font-weight:600;color:var(--gold-600);">
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <button id="addServiceBtn" class="btn btn-default btn-sm" onclick="addAdminService()">Ajouter le service</button>
+          </div>
+        </div>
+
         <div id="adminServicesList" style="display:flex;flex-direction:column;gap:16px;"></div>
         <p id="adminServicesEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucun service pour le moment.</p>
       </div>
     </section>
 
-    <section style="background:#fff;">
+    <!-- ===== Onglet : Disponibilités ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-availability">
       <div class="container" style="max-width:920px;">
         <div style="text-align:center;margin-bottom:32px;">
           <span class="eyebrow">Agenda</span>
@@ -1265,8 +1339,28 @@
       </div>
     </section>
 
+    <!-- ===== Onglet : Témoignages ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-testimonials">
+      <div class="container" style="max-width:920px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="eyebrow">Avis clients</span>
+          <h2 class="section-title" style="font-size:28px;">Modération des témoignages</h2>
+          <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
+            Les témoignages soumis par les clientes n'apparaissent sur le site qu'une fois approuvés ici.
+          </p>
+        </div>
+        <div id="adminTestimonialsList" style="display:flex;flex-direction:column;gap:16px;"></div>
+        <p id="adminTestimonialsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucun témoignage pour le moment.</p>
+      </div>
+    </section>
 
-          <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;">
+    <!-- ===== Onglet : Bannière promo ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-promo">
+      <div class="container" style="max-width:920px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="eyebrow">Promotion</span>
+          <h2 class="section-title" style="font-size:28px;">Bannière promotionnelle</h2>
+          <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
             Cette image apparaît bien en vue sur la page d'accueil du site et redirige les visiteurs vers le lien de votre choix (par exemple votre TikTok) lorsqu'ils cliquent dessus.
           </p>
         </div>
@@ -1379,11 +1473,145 @@
     document.getElementById('servicesGridFull').innerHTML = SERVICES.map(renderServiceCard).join('');
   }
 
-  const TESTIMONIALS = [
+  const STATIC_TESTIMONIALS = [
     { name: "Marie L.", rating: 5, text: "Une séance d'une grande douceur, qui m'a permis de retrouver de la clarté sur une décision importante. Je recommande vivement." },
     { name: "Sophie B.", rating: 5, text: "Vicky a une écoute incroyable. Je suis ressortie de la séance apaisée et avec des pistes concrètes pour avancer." },
     { name: "Julie T.", rating: 4, text: "Le soin énergétique m'a vraiment aidée à me recentrer dans une période difficile. Merci pour ce bel accompagnement." }
   ];
+
+  let REAL_TESTIMONIALS = [];
+
+  async function loadTestimonials() {
+    try {
+      const res = await fetch('/api/testimonials');
+      const rows = await res.json();
+      REAL_TESTIMONIALS = rows.map(r => ({ name: r.author_name, rating: r.rating, text: r.quote }));
+    } catch (e) {
+      REAL_TESTIMONIALS = [];
+      console.error('Erreur de chargement des témoignages :', e.message);
+    }
+    renderTestimonialsSections();
+  }
+
+  function renderTestimonialsSections() {
+    const all = [...REAL_TESTIMONIALS, ...STATIC_TESTIMONIALS];
+    document.getElementById('testimonialsGridHome').innerHTML = all.map(renderTestimonialCard).join('');
+    document.getElementById('testimonialsGridFull').innerHTML = all.map(renderTestimonialCard).join('');
+  }
+
+  // ================================================================
+  // FORMULAIRE DE SOUMISSION DE TÉMOIGNAGE (cliente connectée)
+  // ================================================================
+
+  let selectedTestimonialRating = 5;
+
+  function paintTestimonialStars() {
+    document.querySelectorAll('#testimonialStarsInput .star-input').forEach(el => {
+      const value = Number(el.dataset.value);
+      el.style.color = value <= selectedTestimonialRating ? 'var(--gold-600, #A87C2E)' : '#D8CFC8';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('#testimonialStarsInput .star-input').forEach(el => {
+      el.addEventListener('click', () => {
+        selectedTestimonialRating = Number(el.dataset.value);
+        paintTestimonialStars();
+      });
+    });
+    paintTestimonialStars();
+  });
+
+  async function submitTestimonial() {
+    const quoteEl = document.getElementById('testimonialQuoteInput');
+    const errorEl = document.getElementById('testimonialFormError');
+    errorEl.style.display = 'none';
+
+    const quote = quoteEl.value.trim();
+    if (!quote) {
+      errorEl.textContent = 'Veuillez décrire votre expérience avant d\'envoyer.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: selectedTestimonialRating, quote }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'envoi du témoignage.');
+
+      quoteEl.value = '';
+      selectedTestimonialRating = 5;
+      paintTestimonialStars();
+      showToast('Merci ! Votre témoignage sera publié après vérification par Vicky.');
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.style.display = 'block';
+    }
+  }
+
+  // ================================================================
+  // FORMULAIRE DE CONTACT (page Contact)
+  // ================================================================
+
+  async function submitContactForm() {
+    const nameEl = document.getElementById('contactNameInput');
+    const emailEl = document.getElementById('contactEmailInput');
+    const messageEl = document.getElementById('contactMessageInput');
+    const errorEl = document.getElementById('contactFormError');
+    const btnEl = document.getElementById('contactSubmitBtn');
+    errorEl.style.display = 'none';
+
+    const name = nameEl.value.trim();
+    const email = emailEl.value.trim();
+    const message = messageEl.value.trim();
+
+    if (!name) {
+      errorEl.textContent = 'Veuillez indiquer votre nom.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !EMAIL_REGEX.test(email)) {
+      errorEl.textContent = 'Veuillez indiquer une adresse courriel valide.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!message) {
+      errorEl.textContent = 'Veuillez écrire un message avant d\'envoyer.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    btnEl.disabled = true;
+    const originalLabel = btnEl.textContent;
+    btnEl.textContent = 'Envoi en cours…';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'envoi du message.');
+
+      nameEl.value = '';
+      emailEl.value = '';
+      messageEl.value = '';
+      showToast('Message envoyé ! Vicky vous répondra dès que possible.');
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.style.display = 'block';
+    } finally {
+      btnEl.disabled = false;
+      btnEl.textContent = originalLabel;
+    }
+  }
+
 
   const FAQS = [
     { q: "Comment réserver une séance ?", a: "Rendez-vous sur la page « Réserver », choisissez le service qui vous convient, puis sélectionnez une date et une heure disponibles dans le calendrier. Vous devrez créer un compte ou vous connecter pour finaliser la réservation." },
@@ -1417,11 +1645,11 @@
     const initials = t.name.split(' ').map(w => w[0]).join('').toUpperCase();
     return `<div class="glass-card testimonial-card">
       ${starString(t.rating)}
-      <p class="quote">« ${t.text} »</p>
+      <p class="quote">« ${escapeHtml(t.text)} »</p>
       <div class="testimonial-author">
-        <div class="avatar">${initials}</div>
+        <div class="avatar">${escapeHtml(initials)}</div>
         <div>
-          <div class="author-name">${t.name}</div>
+          <div class="author-name">${escapeHtml(t.name)}</div>
           <div class="author-sub">Cliente vérifiée</div>
         </div>
       </div>
@@ -1447,9 +1675,8 @@
   // Le rendu des services est désormais déclenché par loadServices() (asynchrone),
   // appelée à l'initialisation en bas du script.
 
-  // Render testimonials
-  document.getElementById('testimonialsGridHome').innerHTML = TESTIMONIALS.map(renderTestimonialCard).join('');
-  document.getElementById('testimonialsGridFull').innerHTML = TESTIMONIALS.map(renderTestimonialCard).join('');
+  // Le rendu des témoignages est désormais déclenché par loadTestimonials() (asynchrone),
+  // appelée à l'initialisation en bas du script.
 
   // Render FAQ
   renderFaqList(FAQS.slice(0, 4), 'faqListHome');
@@ -1469,6 +1696,43 @@
 
   function toggleMobileMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  // ================================================================
+  // ONGLETS DE L'ESPACE ADMIN
+  // ================================================================
+
+  const ADMIN_TAB_LOADERS = {
+    bookings: () => loadAdminBookings(),
+    services: () => loadAdminServices(),
+    availability: () => loadAdminAvailability(),
+    testimonials: () => loadAdminTestimonials(),
+    promo: () => loadAdminPromo(),
+  };
+
+  const adminTabsLoadedOnce = new Set();
+
+  function switchAdminTab(tab) {
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    document.querySelectorAll('.admin-tab-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.id === `adminTab-${tab}`);
+    });
+
+    // Chargement paresseux : on ne recharge pas un onglet déjà visité dans cette
+    // visite de l'espace admin, sauf après une action qui appelle explicitement
+    // le loader correspondant (ex. après ajout d'un service).
+    if (!adminTabsLoadedOnce.has(tab) && ADMIN_TAB_LOADERS[tab]) {
+      adminTabsLoadedOnce.add(tab);
+      ADMIN_TAB_LOADERS[tab]();
+    }
+  }
+
+  function openAdminSpace() {
+    adminTabsLoadedOnce.clear();
+    showPage('admin');
+    switchAdminTab('bookings');
   }
 
   function showToast(message) {
@@ -1806,6 +2070,13 @@
     loggedInMobile.style.display = isLoggedIn ? 'flex' : 'none';
 
     if (adminLink) adminLink.style.display = (isLoggedIn && currentUser.role === 'admin') ? 'inline-flex' : 'none';
+
+    const testimonialLoggedOut = document.getElementById('testimonialFormLoggedOut');
+    const testimonialLoggedIn = document.getElementById('testimonialFormLoggedIn');
+    if (testimonialLoggedOut && testimonialLoggedIn) {
+      testimonialLoggedOut.style.display = isLoggedIn ? 'none' : 'block';
+      testimonialLoggedIn.style.display = isLoggedIn ? 'block' : 'none';
+    }
   }
 
   async function handleRegister() {
@@ -2466,12 +2737,15 @@
   }
 
   // ================================================================
-  // GESTION DES SERVICES (admin) — modifier prix et description
+  // GESTION DES SERVICES (admin) — ajouter, modifier, désactiver
   // ================================================================
+
+  const MAX_ACTIVE_SERVICES = 10;
 
   async function loadAdminServices() {
     const listEl = document.getElementById('adminServicesList');
     const emptyEl = document.getElementById('adminServicesEmpty');
+    const countEl = document.getElementById('adminServicesCount');
     listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:var(--ink-500);">Chargement…</p>';
 
     try {
@@ -2482,6 +2756,17 @@
       }
       const services = await res.json();
 
+      const activeCount = services.filter(s => s.active).length;
+      if (countEl) {
+        countEl.textContent = `${activeCount} / ${MAX_ACTIVE_SERVICES} services actifs`;
+      }
+      const addBtn = document.getElementById('addServiceBtn');
+      if (addBtn) {
+        addBtn.disabled = activeCount >= MAX_ACTIVE_SERVICES;
+        addBtn.style.opacity = activeCount >= MAX_ACTIVE_SERVICES ? '0.5' : '1';
+        addBtn.style.cursor = activeCount >= MAX_ACTIVE_SERVICES ? 'not-allowed' : 'pointer';
+      }
+
       if (!services.length) {
         listEl.innerHTML = '';
         emptyEl.style.display = 'block';
@@ -2490,11 +2775,21 @@
       emptyEl.style.display = 'none';
 
       listEl.innerHTML = services.map(s => `
-        <div class="glass-card" style="padding:24px;" id="adminServiceCard-${s.id}">
+        <div class="glass-card" style="padding:24px;${s.active ? '' : 'opacity:0.6;'}" id="adminServiceCard-${s.id}">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            <span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;${s.active ? 'background:#E8F5E9;color:#2E7D32;' : 'background:#F1F1F1;color:var(--ink-500);'}">
+              ${s.active ? 'ACTIF' : 'DÉSACTIVÉ'}
+            </span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:16px;margin-bottom:14px;">
             <div>
-              <h4 style="font-family:Georgia,serif;font-size:17px;font-weight:600;">${escapeHtml(s.name)}</h4>
-              <span style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);">🕐 ${escapeHtml(s.duration)}</span>
+              <label style="display:block;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:6px;">Nom du service</label>
+              <input id="adminServiceName-${s.id}" type="text" value="${escapeHtml(s.name)}" style="width:100%;padding:10px 12px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:Georgia,serif;font-size:15px;font-weight:600;">
+            </div>
+            <div>
+              <label style="display:block;font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:6px;">Durée</label>
+              <input id="adminServiceDuration-${s.id}" type="text" value="${escapeHtml(s.duration)}" style="width:100%;padding:10px 12px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:-apple-system,sans-serif;font-size:14px;">
             </div>
           </div>
 
@@ -2511,6 +2806,10 @@
 
           <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;">
             <span id="adminServiceSaved-${s.id}" style="display:none;font-family:-apple-system,sans-serif;font-size:12px;color:#2E7D32;">✓ Enregistré</span>
+            ${s.active
+              ? `<button class="btn btn-outline btn-sm" onclick="toggleAdminService(${s.id}, false)" style="color:#B3261E;border-color:#B3261E;">Désactiver</button>`
+              : `<button class="btn btn-outline btn-sm" onclick="toggleAdminService(${s.id}, true)">Réactiver</button>`
+            }
             <button class="btn btn-default btn-sm" onclick="saveAdminService(${s.id})">Enregistrer</button>
           </div>
         </div>
@@ -2521,15 +2820,28 @@
   }
 
   async function saveAdminService(id) {
+    const nameEl = document.getElementById(`adminServiceName-${id}`);
+    const durationEl = document.getElementById(`adminServiceDuration-${id}`);
     const descEl = document.getElementById(`adminServiceDesc-${id}`);
     const priceEl = document.getElementById(`adminServicePrice-${id}`);
     const savedEl = document.getElementById(`adminServiceSaved-${id}`);
+
+    if (!nameEl.value.trim()) {
+      showToast('Le nom du service ne peut pas être vide.');
+      return;
+    }
+    if (!durationEl.value.trim()) {
+      showToast('La durée du service ne peut pas être vide.');
+      return;
+    }
 
     try {
       const res = await fetch(`/api/admin/services/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          name: nameEl.value,
+          duration: durationEl.value,
           description: descEl.value,
           price: priceEl.value,
         }),
@@ -2548,6 +2860,154 @@
 
       // Rafraîchit le catalogue public (cartes services + options de réservation)
       loadServices();
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  async function toggleAdminService(id, makeActive) {
+    try {
+      const res = await fetch(
+        makeActive ? `/api/admin/services/${id}/reactivate` : `/api/admin/services/${id}`,
+        { method: makeActive ? 'POST' : 'DELETE' }
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la mise à jour.');
+
+      showToast(makeActive ? 'Service réactivé.' : 'Service désactivé. Il ne sera plus proposé aux nouvelles réservations.');
+      loadAdminServices();
+      loadServices();
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  async function addAdminService() {
+    const nameEl = document.getElementById('newServiceName');
+    const durationEl = document.getElementById('newServiceDuration');
+    const descEl = document.getElementById('newServiceDesc');
+    const priceEl = document.getElementById('newServicePrice');
+
+    if (!nameEl.value.trim()) {
+      showToast('Le nom du service est requis.');
+      return;
+    }
+    if (!durationEl.value.trim()) {
+      showToast('La durée du service est requise.');
+      return;
+    }
+    if (!priceEl.value.trim()) {
+      showToast('Le prix du service est requis.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: nameEl.value,
+          duration: durationEl.value,
+          description: descEl.value,
+          price: priceEl.value,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la création du service.');
+
+      nameEl.value = '';
+      durationEl.value = '';
+      descEl.value = '';
+      priceEl.value = '';
+
+      showToast('Nouveau service ajouté !');
+      loadAdminServices();
+      loadServices();
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  // ================================================================
+  // MODÉRATION DES TÉMOIGNAGES (admin)
+  // ================================================================
+
+  function testimonialStatusBadge(status) {
+    if (status === 'approuve') return '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#E8F5E9;color:#2E7D32;">APPROUVÉ</span>';
+    if (status === 'rejete') return '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#F1F1F1;color:var(--ink-500);">REJETÉ</span>';
+    return '<span style="font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#FFF3E0;color:#A87C2E;">EN ATTENTE</span>';
+  }
+
+  async function loadAdminTestimonials() {
+    const listEl = document.getElementById('adminTestimonialsList');
+    const emptyEl = document.getElementById('adminTestimonialsEmpty');
+    listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:var(--ink-500);">Chargement…</p>';
+
+    try {
+      const res = await fetch('/api/admin/testimonials');
+      if (res.status === 403) {
+        listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Accès réservé à l\'administration.</p>';
+        return;
+      }
+      const rows = await res.json();
+
+      if (!rows.length) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+      }
+      emptyEl.style.display = 'none';
+
+      listEl.innerHTML = rows.map(t => `
+        <div class="glass-card" style="padding:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+            <div>
+              <div style="font-family:Georgia,serif;font-weight:600;">${escapeHtml(t.author_name)}</div>
+              <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);">${escapeHtml(t.author_email)}</div>
+            </div>
+            ${testimonialStatusBadge(t.status)}
+          </div>
+          <div style="color:var(--gold-600,#A87C2E);letter-spacing:2px;margin-bottom:8px;">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
+          <p style="font-family:Georgia,serif;font-style:italic;color:var(--ink-700);margin-bottom:16px;">« ${escapeHtml(t.quote)} »</p>
+          <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;">
+            ${t.status !== 'approuve' ? `<button class="btn btn-default btn-sm" onclick="setTestimonialStatus(${t.id}, 'approuve')">Approuver</button>` : ''}
+            ${t.status !== 'rejete' ? `<button class="btn btn-outline btn-sm" onclick="setTestimonialStatus(${t.id}, 'rejete')" style="color:#B3261E;border-color:#B3261E;">Rejeter</button>` : ''}
+            <button class="btn btn-outline btn-sm" onclick="deleteAdminTestimonial(${t.id})">Supprimer</button>
+          </div>
+        </div>
+      `).join('');
+    } catch (e) {
+      listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Erreur de chargement.</p>';
+    }
+  }
+
+  async function setTestimonialStatus(id, status) {
+    try {
+      const res = await fetch(`/api/admin/testimonials/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la mise à jour.');
+
+      showToast(status === 'approuve' ? 'Témoignage approuvé et visible sur le site.' : 'Témoignage rejeté.');
+      loadAdminTestimonials();
+      loadTestimonials();
+    } catch (e) {
+      showToast(e.message);
+    }
+  }
+
+  async function deleteAdminTestimonial(id) {
+    try {
+      const res = await fetch(`/api/admin/testimonials/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression.');
+
+      showToast('Témoignage supprimé.');
+      loadAdminTestimonials();
+      loadTestimonials();
     } catch (e) {
       showToast(e.message);
     }
@@ -2593,6 +3053,14 @@
           <select id="bizHoursDuration-${r.weekday}" ${r.is_open ? '' : 'disabled'} style="padding:8px 10px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:-apple-system,sans-serif;font-size:13px;">
             <option value="30" ${r.slot_duration_minutes === 30 ? 'selected' : ''}>30 min</option>
             <option value="60" ${r.slot_duration_minutes === 60 ? 'selected' : ''}>60 min</option>
+            <option value="90" ${r.slot_duration_minutes === 90 ? 'selected' : ''}>90 min</option>
+          </select>
+          <span style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);">pause entre les rendez-vous</span>
+          <select id="bizHoursGap-${r.weekday}" ${r.is_open ? '' : 'disabled'} style="padding:8px 10px;border:1px solid var(--ink-200,#ddd);border-radius:8px;font-family:-apple-system,sans-serif;font-size:13px;">
+            <option value="0" ${r.break_between_slots_minutes === 0 ? 'selected' : ''}>Aucune</option>
+            <option value="30" ${r.break_between_slots_minutes === 30 ? 'selected' : ''}>30 min</option>
+            <option value="60" ${r.break_between_slots_minutes === 60 ? 'selected' : ''}>60 min</option>
+            <option value="90" ${r.break_between_slots_minutes === 90 ? 'selected' : ''}>90 min</option>
           </select>
           <button class="btn btn-outline btn-sm" style="margin-left:auto;" onclick="saveBizHoursRow(${r.weekday})">Enregistrer</button>
           <span id="bizHoursSaved-${r.weekday}" style="display:none;font-family:-apple-system,sans-serif;font-size:12px;color:#2E7D32;">✓ Enregistré</span>
@@ -2605,7 +3073,7 @@
 
   function toggleBizHoursRowEnabled(weekday) {
     const isOpen = document.getElementById(`bizHoursOpen-${weekday}`).checked;
-    ['bizHoursStart', 'bizHoursEnd', 'bizHoursDuration'].forEach(prefix => {
+    ['bizHoursStart', 'bizHoursEnd', 'bizHoursDuration', 'bizHoursGap'].forEach(prefix => {
       document.getElementById(`${prefix}-${weekday}`).disabled = !isOpen;
     });
   }
@@ -2615,12 +3083,13 @@
     const startTime = document.getElementById(`bizHoursStart-${weekday}`).value;
     const endTime = document.getElementById(`bizHoursEnd-${weekday}`).value;
     const slotDurationMinutes = parseInt(document.getElementById(`bizHoursDuration-${weekday}`).value, 10);
+    const breakBetweenSlotsMinutes = parseInt(document.getElementById(`bizHoursGap-${weekday}`).value, 10);
 
     try {
       const res = await fetch(`/api/admin/business-hours/${weekday}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isOpen, startTime, endTime, slotDurationMinutes }),
+        body: JSON.stringify({ isOpen, startTime, endTime, slotDurationMinutes, breakBetweenSlotsMinutes }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de la mise à jour.');
@@ -2840,6 +3309,7 @@
 
   // Initialisation au chargement
   loadServices(); // charge le catalogue depuis le serveur, puis initialise les options de réservation
+  loadTestimonials(); // charge les témoignages approuvés depuis le serveur
   showBookingPanel(1);
   refreshCurrentUser();
   checkForResetTokenInUrl();
