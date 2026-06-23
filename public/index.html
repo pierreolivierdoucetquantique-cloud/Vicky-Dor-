@@ -1123,6 +1123,22 @@
     </div>
   </div>
 
+  <!-- ============ MODALE : SUPPRESSION DU COMPTE ============ -->
+  <div class="modal-overlay" id="deleteAccountOverlay" onclick="if(event.target===this) closeDeleteAccountModal()">
+    <div class="modal-box">
+      <button type="button" class="modal-close-btn" onclick="closeDeleteAccountModal()" aria-label="Fermer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h3 class="modal-title">Supprimer mon compte</h3>
+      <p class="modal-sub">Êtes-vous certaine de vouloir supprimer définitivement votre compte ? Cette action est irréversible. Tous vos renseignements personnels, vos rendez-vous et vos messages seront retirés définitivement de nos systèmes, conformément aux lois applicables sur la protection des renseignements personnels.</p>
+      <p id="deleteAccountMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;color:#B3261E;margin-bottom:12px;"></p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline" style="flex:1;" onclick="closeDeleteAccountModal()">Annuler</button>
+        <button class="btn btn-default" style="flex:1;background:#B3261E;" id="confirmDeleteAccountBtn" onclick="handleDeleteAccountConfirm()">Oui, supprimer mon compte</button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- ============ PAGE RÉINITIALISATION DU MOT DE PASSE ============ -->
   <section id="page-reinitialiser" class="page-section">
@@ -1181,11 +1197,13 @@
             <div class="form-group"><label>Nom</label><input type="text" id="regLastNameInput"></div>
           </div>
           <div class="form-group"><label>Adresse courriel</label><input type="email" id="regEmailInput"></div>
-          <div class="form-group"><label>Date de naissance</label><input type="date" id="regBirthDateInput" autocomplete="bday"></div>
-          <div class="form-group">
-            <label>Ville</label>
-            <input type="text" id="regCityInput" list="qcCitiesList" autocomplete="address-level2" placeholder="Commencez à taper le nom de votre ville">
-            <datalist id="qcCitiesList"></datalist>
+          <div class="demo-grid-2">
+            <div class="form-group"><label>Date de naissance</label><input type="date" id="regBirthDateInput" autocomplete="bday"></div>
+            <div class="form-group">
+              <label>Ville</label>
+              <input type="text" id="regCityInput" list="qcCitiesList" autocomplete="address-level2" placeholder="Votre ville">
+              <datalist id="qcCitiesList"></datalist>
+            </div>
           </div>
           <div class="form-group">
             <label>Mot de passe</label>
@@ -1201,6 +1219,9 @@
           </div>
           <p id="registerErrorMessage" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
           <button class="btn btn-default btn-full" onclick="handleRegister()">Créer mon compte</button>
+          <p style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--ink-500);text-align:center;margin-top:14px;line-height:1.5;">
+            En créant un compte, vous reconnaissez que vos renseignements personnels seront recueillis et protégés conformément à la <a onclick="showPage('confidentialite')" style="color:var(--gold-600,#A87C2E);cursor:pointer;">politique de confidentialité</a>, hébergés et protégés selon les normes canadiennes applicables.
+          </p>
           <p class="center-note">Déjà un compte ? <a class="small-link" onclick="showPage('connexion')" style="font-weight:600;">Se connecter</a></p>
         </div>
       </div>
@@ -1321,6 +1342,14 @@
         <p id="myBookingsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">
           Vous n'avez pas encore de rendez-vous. <a class="small-link" onclick="showPage('reserver')" style="font-weight:600;">Réserver maintenant</a>
         </p>
+
+        <div class="glass-card" style="padding:24px;margin-top:40px;border-color:rgba(179,38,30,0.25);">
+          <h3 style="font-family:Georgia,serif;font-size:16px;margin-bottom:6px;">Gestion de mon compte</h3>
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;">
+            Vous pouvez supprimer définitivement votre compte et toutes les données qui y sont associées (réservations, messages). Cette action est irréversible.
+          </p>
+          <button class="btn btn-outline" style="border-color:#B3261E;color:#B3261E;" onclick="openDeleteAccountModal()">Supprimer mon compte</button>
+        </div>
       </div>
     </section>
   </section>
@@ -2462,6 +2491,39 @@
       document.getElementById('consentOverlay').classList.remove('open');
       errorEl.textContent = err.message;
       errorEl.style.display = 'block';
+    }
+  }
+
+  // ---------- Suppression volontaire du compte (Loi 25 / PIPEDA) ----------
+  function openDeleteAccountModal() {
+    const msgEl = document.getElementById('deleteAccountMessage');
+    msgEl.style.display = 'none';
+    document.getElementById('confirmDeleteAccountBtn').disabled = false;
+    document.getElementById('deleteAccountOverlay').classList.add('open');
+  }
+
+  function closeDeleteAccountModal() {
+    document.getElementById('deleteAccountOverlay').classList.remove('open');
+  }
+
+  async function handleDeleteAccountConfirm() {
+    const msgEl = document.getElementById('deleteAccountMessage');
+    const btn = document.getElementById('confirmDeleteAccountBtn');
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression du compte.');
+
+      closeDeleteAccountModal();
+      currentUser = null;
+      updateNavForAuthState();
+      showToast('Votre compte a été supprimé définitivement.');
+      showPage('accueil');
+    } catch (err) {
+      msgEl.textContent = err.message;
+      msgEl.style.display = 'block';
+      btn.disabled = false;
     }
   }
 
