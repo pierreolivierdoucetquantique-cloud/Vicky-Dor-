@@ -766,10 +766,18 @@
       </div>
     </section>
 
-    <section class="gradient-divine" id="promoBannerSection" style="display:none;">
+    <section class="gradient-divine" id="promoBannerSection1" style="display:none;">
       <div class="container" style="max-width:760px;">
-        <a id="promoBannerLink" href="#" target="_blank" rel="noopener noreferrer" style="display:block;">
-          <img id="promoBannerImage" src="" alt="Suivez Vicky Doré sur TikTok" style="width:100%;border-radius:20px;box-shadow:0 10px 40px -10px rgba(168,91,81,0.25);display:block;">
+        <a id="promoBannerLink1" href="#" target="_blank" rel="noopener noreferrer" style="display:block;">
+          <img id="promoBannerImage1" src="" alt="Suivez Vicky Doré" style="width:100%;border-radius:20px;box-shadow:0 10px 40px -10px rgba(168,91,81,0.25);display:block;">
+        </a>
+      </div>
+    </section>
+
+    <section class="gradient-divine" id="promoBannerSection2" style="display:none;">
+      <div class="container" style="max-width:760px;">
+        <a id="promoBannerLink2" href="#" target="_blank" rel="noopener noreferrer" style="display:block;">
+          <img id="promoBannerImage2" src="" alt="Suivez Vicky Doré" style="width:100%;border-radius:20px;box-shadow:0 10px 40px -10px rgba(168,91,81,0.25);display:block;">
         </a>
       </div>
     </section>
@@ -1102,18 +1110,14 @@
        le consentement doit résulter d'une action délibérée (case cochée +
        bouton cliqué), jamais d'une fermeture accidentelle. -->
   <div class="modal-overlay" id="consentOverlay">
-    <div class="modal-box">
-      <h3 class="modal-title">Avant de créer votre compte</h3>
-      <p class="modal-sub">Voici, en résumé, quels renseignements nous recueillons et comment ils sont utilisés. Le détail complet se trouve dans notre <a onclick="closeConsentModal(); showPage('confidentialite');" style="color:var(--gold-600,#A87C2E);cursor:pointer;text-decoration:underline;">politique de confidentialité</a>.</p>
-      <ul style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);line-height:1.6;margin:0 0 16px 18px;">
-        <li>Nom, courriel, date de naissance et ville, pour créer et gérer votre compte</li>
-        <li>Historique de vos réservations et de vos messages, pour assurer le suivi de votre accompagnement</li>
-        <li>Vos renseignements ne sont jamais vendus ni partagés à des fins publicitaires</li>
-        <li>Vous pouvez demander l'accès, la correction ou la suppression de vos renseignements à tout moment en écrivant à <a href="mailto:message_VD@hotmail.com" style="color:var(--gold-600,#A87C2E);">message_VD@hotmail.com</a></li>
-      </ul>
-      <label style="display:flex;align-items:flex-start;gap:10px;font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);cursor:pointer;margin-bottom:18px;">
-        <input type="checkbox" id="consentCheckbox" style="margin-top:3px;flex-shrink:0;">
-        <span>J'ai lu et j'accepte la politique de confidentialité, et je consens à la collecte et à l'utilisation de mes renseignements personnels aux fins décrites ci-dessus.</span>
+    <div class="modal-box" style="max-width:380px;box-sizing:border-box;">
+      <h3 class="modal-title" style="margin-bottom:14px;">Avant de créer votre compte</h3>
+      <p class="modal-sub" style="margin-bottom:18px;">
+        Vos renseignements servent uniquement à gérer votre compte et vos rendez-vous. Ils ne sont jamais vendus ni partagés à des fins publicitaires. Détails dans notre <a onclick="closeConsentModal(); showPage('confidentialite');" style="color:var(--gold-600,#A87C2E);cursor:pointer;text-decoration:underline;">politique de confidentialité</a>.
+      </p>
+      <label style="display:flex;align-items:flex-start;gap:10px;font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);cursor:pointer;margin-bottom:16px;line-height:1.5;">
+        <input type="checkbox" id="consentCheckbox" style="margin-top:2px;flex-shrink:0;">
+        <span style="flex:1;min-width:0;">J'ai lu et j'accepte la politique de confidentialité.</span>
       </label>
       <p id="consentMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;color:#B3261E;margin-bottom:12px;"></p>
       <div style="display:flex;gap:10px;">
@@ -1151,7 +1155,7 @@
             <div class="form-group">
               <label>Nouveau mot de passe</label>
               <div class="password-field-wrap">
-                <input type="password" id="resetNewPasswordInput" placeholder="6 caractères minimum">
+                <input type="password" id="resetNewPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
                 <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('resetNewPasswordInput', this)" aria-label="Afficher le mot de passe">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
@@ -1159,11 +1163,12 @@
                   </svg>
                 </button>
               </div>
+              <p style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);margin-top:6px;">Au moins 8 caractères, une majuscule et un caractère spécial.</p>
             </div>
             <div class="form-group">
               <label>Confirmer le mot de passe</label>
               <div class="password-field-wrap">
-                <input type="password" id="resetConfirmPasswordInput" placeholder="6 caractères minimum">
+                <input type="password" id="resetConfirmPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
                 <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('resetConfirmPasswordInput', this)" aria-label="Afficher le mot de passe">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
@@ -1208,7 +1213,7 @@
           <div class="form-group">
             <label>Mot de passe</label>
             <div class="password-field-wrap">
-              <input type="password" id="regPasswordInput" placeholder="6 caractères minimum">
+              <input type="password" id="regPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
               <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('regPasswordInput', this)" aria-label="Afficher le mot de passe">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
@@ -1216,6 +1221,7 @@
                 </svg>
               </button>
             </div>
+            <p style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);margin-top:6px;">Au moins 8 caractères, une majuscule et un caractère spécial.</p>
           </div>
           <p id="registerErrorMessage" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
           <button class="btn btn-default btn-full" onclick="handleRegister()">Créer mon compte</button>
@@ -1343,7 +1349,43 @@
           Vous n'avez pas encore de rendez-vous. <a class="small-link" onclick="showPage('reserver')" style="font-weight:600;">Réserver maintenant</a>
         </p>
 
-        <div class="glass-card" style="padding:24px;margin-top:40px;border-color:rgba(179,38,30,0.25);">
+        <div class="glass-card" style="padding:24px;margin-top:40px;">
+          <h3 style="font-family:Georgia,serif;font-size:16px;margin-bottom:6px;">Changer mon mot de passe</h3>
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;">
+            Au moins 8 caractères, une majuscule et un caractère spécial.
+          </p>
+          <div class="form-group">
+            <label>Mot de passe actuel</label>
+            <div class="password-field-wrap">
+              <input type="password" id="clientCurrentPasswordInput" placeholder="Mot de passe actuel">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('clientCurrentPasswordInput', this)" aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <div class="password-field-wrap">
+              <input type="password" id="clientNewPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('clientNewPasswordInput', this)" aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirmer le nouveau mot de passe</label>
+            <div class="password-field-wrap">
+              <input type="password" id="clientConfirmPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('clientConfirmPasswordInput', this)" aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <p id="clientChangePasswordMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
+          <button class="btn btn-default" onclick="handleClientChangePassword()">Mettre à jour le mot de passe</button>
+        </div>
+
+        <div class="glass-card" style="padding:24px;margin-top:24px;border-color:rgba(179,38,30,0.25);">
           <h3 style="font-family:Georgia,serif;font-size:16px;margin-bottom:6px;">Gestion de mon compte</h3>
           <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;">
             Vous pouvez supprimer définitivement votre compte et toutes les données qui y sont associées (réservations, messages). Cette action est irréversible.
@@ -1367,12 +1409,14 @@
       <div class="container" style="max-width:920px;">
         <div id="adminTabsBar" style="display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--ink-200,#ddd);padding-bottom:0;">
           <button class="admin-tab-btn" data-tab="bookings" onclick="switchAdminTab('bookings')">Réservations</button>
+          <button class="admin-tab-btn" data-tab="clients" onclick="switchAdminTab('clients')">Clients</button>
           <button class="admin-tab-btn" data-tab="services" onclick="switchAdminTab('services')">Services</button>
           <button class="admin-tab-btn" data-tab="availability" onclick="switchAdminTab('availability')">Disponibilités</button>
           <button class="admin-tab-btn" data-tab="testimonials" onclick="switchAdminTab('testimonials')">Témoignages</button>
           <button class="admin-tab-btn" data-tab="messages" onclick="switchAdminTab('messages')">Messages<span id="adminMessagesUnreadBadge" style="display:none;margin-left:6px;background:#B3261E;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;"></span></button>
           <button class="admin-tab-btn" data-tab="promo" onclick="switchAdminTab('promo')">Bannière promo</button>
           <button class="admin-tab-btn" data-tab="content" onclick="switchAdminTab('content')">Descriptions</button>
+          <button class="admin-tab-btn" data-tab="account" onclick="switchAdminTab('account')">Mon compte</button>
         </div>
       </div>
     </section>
@@ -1385,6 +1429,24 @@
         </div>
         <div id="adminBookingsList" style="display:flex;flex-direction:column;gap:16px;"></div>
         <p id="adminBookingsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucune réservation pour le moment.</p>
+      </div>
+    </section>
+
+    <!-- ===== Onglet : Clients ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-clients">
+      <div class="container" style="max-width:920px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="eyebrow">Votre clientèle</span>
+          <h2 class="section-title" style="font-size:28px;">Comptes clients actifs</h2>
+          <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
+            Liste de toutes les clientes ayant un compte sur le site, des plus récentes aux plus anciennes.
+          </p>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+          <input type="text" id="adminClientsSearchInput" placeholder="Rechercher par nom ou courriel..." oninput="renderAdminClientsList()" style="max-width:320px;width:100%;padding:10px 14px;border:1px solid var(--ink-200,#E5DDD2);border-radius:10px;font-family:-apple-system,sans-serif;font-size:14px;">
+        </div>
+        <div id="adminClientsList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <p id="adminClientsEmpty" style="display:none;text-align:center;font-family:-apple-system,sans-serif;color:var(--ink-500);padding:40px 0;">Aucun compte client pour le moment.</p>
       </div>
     </section>
 
@@ -1452,7 +1514,10 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div class="form-group" style="margin-bottom:0;">
               <label for="blockDateInput">Date</label>
-              <input type="date" id="blockDateInput">
+              <div style="display:flex;gap:8px;">
+                <input type="date" id="blockDateInput" style="flex:1;">
+                <button type="button" class="btn btn-outline" style="padding:0 16px;white-space:nowrap;" onclick="handleAddDateToBlockList()">+ Ajouter</button>
+              </div>
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label for="blockReasonInput">Motif (optionnel)</label>
@@ -1467,6 +1532,12 @@
               <input type="time" id="blockEndInput">
             </div>
           </div>
+
+          <div id="blockDatesSelectedWrap" style="display:none;margin-top:16px;">
+            <p style="font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:8px;">Dates sélectionnées (<span id="blockDatesCount">0</span>)</p>
+            <div id="blockDatesChips" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+          </div>
+
           <p id="blockPeriodError" style="display:none;color:#B3261E;font-family:-apple-system,sans-serif;font-size:13px;margin-top:12px;"></p>
           <button class="btn btn-default" style="margin-top:16px;" onclick="handleAddBlockedPeriod()">Ajouter le blocage</button>
         </div>
@@ -1525,30 +1596,55 @@
       <div class="container" style="max-width:920px;">
         <div style="text-align:center;margin-bottom:32px;">
           <span class="eyebrow">Promotion</span>
-          <h2 class="section-title" style="font-size:28px;">Bannière promotionnelle</h2>
+          <h2 class="section-title" style="font-size:28px;">Bannières promotionnelles</h2>
           <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;max-width:560px;margin-left:auto;margin-right:auto;">
-            Cette image apparaît bien en vue sur la page d'accueil du site et redirige les visiteurs vers le lien de votre choix (par exemple votre TikTok) lorsqu'ils cliquent dessus.
+            Ces images apparaissent bien en vue sur la page d'accueil du site et redirigent les visiteurs vers le lien de votre choix (par exemple votre TikTok) lorsqu'ils cliquent dessus. Vous pouvez gérer deux bannières indépendantes.
           </p>
         </div>
-        <div class="glass-card" style="padding:32px;">
-          <div id="adminPromoPreviewWrap" style="display:none;margin-bottom:20px;">
+
+        <h3 class="font-serif" style="font-size:16px;margin-bottom:12px;">Bannière 1</h3>
+        <div class="glass-card" style="padding:32px;margin-bottom:32px;">
+          <div id="adminPromoPreviewWrap1" style="display:none;margin-bottom:20px;">
             <p style="font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:8px;">Image actuelle</p>
-            <img id="adminPromoPreviewImage" src="" alt="Aperçu de la publicité actuelle" style="width:100%;border-radius:14px;display:block;">
+            <img id="adminPromoPreviewImage1" src="" alt="Aperçu de la publicité actuelle 1" style="width:100%;border-radius:14px;display:block;">
           </div>
-          <p id="adminPromoEmpty" style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:20px;">Aucune image n'est configurée pour le moment. La bannière n'apparaît pas sur le site tant qu'aucune image n'est téléversée.</p>
+          <p id="adminPromoEmpty1" style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:20px;">Aucune image n'est configurée pour le moment. Cette bannière n'apparaît pas sur le site tant qu'aucune image n'est téléversée.</p>
 
           <div class="form-group">
             <label>Téléverser une nouvelle image</label>
-            <input type="file" id="adminPromoFileInput" accept="image/png,image/jpeg,image/webp,image/gif">
+            <input type="file" id="adminPromoFileInput1" accept="image/png,image/jpeg,image/webp,image/gif">
           </div>
           <div class="form-group">
             <label>Lien de destination (ex. votre page TikTok)</label>
-            <input type="text" id="adminPromoLinkInput" placeholder="https://www.tiktok.com/@vickyyydore">
+            <input type="text" id="adminPromoLinkInput1" placeholder="https://www.tiktok.com/@vickyyydore">
           </div>
-          <p id="adminPromoMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
+          <p id="adminPromoMessage1" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <button class="btn btn-default" onclick="handleAdminPromoSave()">Enregistrer</button>
-            <button class="btn btn-outline" onclick="handleAdminPromoDelete()">Retirer la publicité du site</button>
+            <button class="btn btn-default" onclick="handleAdminPromoSave(1)">Enregistrer</button>
+            <button class="btn btn-outline" onclick="handleAdminPromoDelete(1)">Retirer la publicité du site</button>
+          </div>
+        </div>
+
+        <h3 class="font-serif" style="font-size:16px;margin-bottom:12px;">Bannière 2</h3>
+        <div class="glass-card" style="padding:32px;">
+          <div id="adminPromoPreviewWrap2" style="display:none;margin-bottom:20px;">
+            <p style="font-family:-apple-system,sans-serif;font-size:12px;font-weight:600;color:var(--ink-700);margin-bottom:8px;">Image actuelle</p>
+            <img id="adminPromoPreviewImage2" src="" alt="Aperçu de la publicité actuelle 2" style="width:100%;border-radius:14px;display:block;">
+          </div>
+          <p id="adminPromoEmpty2" style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:20px;">Aucune image n'est configurée pour le moment. Cette bannière n'apparaît pas sur le site tant qu'aucune image n'est téléversée.</p>
+
+          <div class="form-group">
+            <label>Téléverser une nouvelle image</label>
+            <input type="file" id="adminPromoFileInput2" accept="image/png,image/jpeg,image/webp,image/gif">
+          </div>
+          <div class="form-group">
+            <label>Lien de destination</label>
+            <input type="text" id="adminPromoLinkInput2" placeholder="https://...">
+          </div>
+          <p id="adminPromoMessage2" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-default" onclick="handleAdminPromoSave(2)">Enregistrer</button>
+            <button class="btn btn-outline" onclick="handleAdminPromoDelete(2)">Retirer la publicité du site</button>
           </div>
         </div>
       </div>
@@ -1655,6 +1751,53 @@
 
         <div style="display:flex;justify-content:center;margin-top:8px;margin-bottom:48px;">
           <button class="btn btn-default btn-lg" onclick="handleAdminContentSave()">Enregistrer tous les changements</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Onglet : Mon compte (admin) ===== -->
+    <section style="background:#fff;" class="admin-tab-panel" id="adminTab-account">
+      <div class="container" style="max-width:520px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <span class="eyebrow">Sécurité</span>
+          <h2 class="section-title" style="font-size:28px;">Mon compte</h2>
+          <p style="font-family:-apple-system,sans-serif;color:var(--ink-500);font-size:14px;margin-top:8px;">
+            Changez le mot de passe de votre compte administrateur.
+          </p>
+        </div>
+        <div class="glass-card" style="padding:24px;">
+          <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-bottom:16px;">
+            Au moins 8 caractères, une majuscule et un caractère spécial.
+          </p>
+          <div class="form-group">
+            <label>Mot de passe actuel</label>
+            <div class="password-field-wrap">
+              <input type="password" id="adminCurrentPasswordInput" placeholder="Mot de passe actuel">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('adminCurrentPasswordInput', this)" aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <div class="password-field-wrap">
+              <input type="password" id="adminNewPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('adminNewPasswordInput', this)" aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirmer le nouveau mot de passe</label>
+            <div class="password-field-wrap">
+              <input type="password" id="adminConfirmPasswordInput" placeholder="8 caractères, 1 majuscule, 1 spécial">
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('adminConfirmPasswordInput', this)" aria-label="Afficher le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <p id="adminChangePasswordMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;margin-bottom:12px;"></p>
+          <button class="btn btn-default" onclick="handleAdminChangePassword()">Mettre à jour le mot de passe</button>
         </div>
       </div>
     </section>
@@ -1988,6 +2131,7 @@
 
   const ADMIN_TAB_LOADERS = {
     bookings: () => loadAdminBookings(),
+    clients: () => loadAdminClients(),
     services: () => loadAdminServices(),
     availability: () => loadAdminAvailability(),
     testimonials: () => loadAdminTestimonials(),
@@ -2055,6 +2199,24 @@
     btn.innerHTML = isHidden
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
+
+  // Règle de robustesse du mot de passe (cliente ET admin) : au moins 8
+  // caractères, une majuscule et un caractère spécial. Revalidée
+  // systématiquement côté serveur ; cette fonction ne sert qu'au retour
+  // immédiat dans l'interface. Retourne null si valide, sinon un message
+  // d'erreur prêt à afficher.
+  function getPasswordStrengthError(password) {
+    if (!password || password.length < 8) {
+      return 'Le mot de passe doit contenir au moins 8 caractères.';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Le mot de passe doit contenir au moins une lettre majuscule.';
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return 'Le mot de passe doit contenir au moins un caractère spécial.';
+    }
+    return null;
   }
 
   // ---------- Sparkles décoratifs ----------
@@ -2414,6 +2576,13 @@
       return;
     }
 
+    const passwordError = getPasswordStrengthError(password);
+    if (passwordError) {
+      errorEl.textContent = passwordError;
+      errorEl.style.display = 'block';
+      return;
+    }
+
     // Validation de l'âge minimum (18 ans) côté client, pour un retour immédiat.
     // Le serveur revalide systématiquement cette règle.
     const birth = new Date(birthDate);
@@ -2491,6 +2660,94 @@
       document.getElementById('consentOverlay').classList.remove('open');
       errorEl.textContent = err.message;
       errorEl.style.display = 'block';
+    }
+  }
+
+  // ---------- Changement de mot de passe (cliente connectée) ----------
+  async function handleClientChangePassword() {
+    const currentPassword = document.getElementById('clientCurrentPasswordInput').value;
+    const newPassword = document.getElementById('clientNewPasswordInput').value;
+    const confirmPassword = document.getElementById('clientConfirmPasswordInput').value;
+    const msgEl = document.getElementById('clientChangePasswordMessage');
+    msgEl.style.display = 'none';
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      msgEl.textContent = 'Veuillez remplir tous les champs.';
+      msgEl.style.display = 'block';
+      return;
+    }
+    const passwordError = getPasswordStrengthError(newPassword);
+    if (passwordError) {
+      msgEl.textContent = passwordError;
+      msgEl.style.display = 'block';
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      msgEl.textContent = 'Les deux mots de passe ne correspondent pas.';
+      msgEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors du changement de mot de passe.');
+
+      document.getElementById('clientCurrentPasswordInput').value = '';
+      document.getElementById('clientNewPasswordInput').value = '';
+      document.getElementById('clientConfirmPasswordInput').value = '';
+      showToast('Mot de passe mis à jour.');
+    } catch (err) {
+      msgEl.textContent = err.message;
+      msgEl.style.display = 'block';
+    }
+  }
+
+  // ---------- Changement de mot de passe (Vicky, depuis l'espace admin) ----------
+  async function handleAdminChangePassword() {
+    const currentPassword = document.getElementById('adminCurrentPasswordInput').value;
+    const newPassword = document.getElementById('adminNewPasswordInput').value;
+    const confirmPassword = document.getElementById('adminConfirmPasswordInput').value;
+    const msgEl = document.getElementById('adminChangePasswordMessage');
+    msgEl.style.display = 'none';
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      msgEl.textContent = 'Veuillez remplir tous les champs.';
+      msgEl.style.display = 'block';
+      return;
+    }
+    const passwordError = getPasswordStrengthError(newPassword);
+    if (passwordError) {
+      msgEl.textContent = passwordError;
+      msgEl.style.display = 'block';
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      msgEl.textContent = 'Les deux mots de passe ne correspondent pas.';
+      msgEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors du changement de mot de passe.');
+
+      document.getElementById('adminCurrentPasswordInput').value = '';
+      document.getElementById('adminNewPasswordInput').value = '';
+      document.getElementById('adminConfirmPasswordInput').value = '';
+      showToast('Mot de passe mis à jour.');
+    } catch (err) {
+      msgEl.textContent = err.message;
+      msgEl.style.display = 'block';
     }
   }
 
@@ -2630,8 +2887,9 @@
       msgEl.style.display = 'block';
       return;
     }
-    if (newPassword.length < 6) {
-      msgEl.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+    const passwordError = getPasswordStrengthError(newPassword);
+    if (passwordError) {
+      msgEl.textContent = passwordError;
       msgEl.style.display = 'block';
       return;
     }
@@ -3070,6 +3328,72 @@
   // ================================================================
   // ESPACE ADMIN (Vicky voit toutes les réservations)
   // ================================================================
+
+  // ---------- Liste des comptes clients actifs (onglet admin « Clients ») ----------
+  // Les données sont chargées une fois depuis le serveur, puis la recherche
+  // tape uniquement dans ce cache local — pas de requête réseau à chaque frappe.
+  let cachedAdminClients = [];
+
+  async function loadAdminClients() {
+    const listEl = document.getElementById('adminClientsList');
+    const emptyEl = document.getElementById('adminClientsEmpty');
+    listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:var(--ink-500);">Chargement…</p>';
+
+    try {
+      const res = await fetch('/api/admin/clients');
+      if (res.status === 403) {
+        listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Accès réservé à l\'administration.</p>';
+        return;
+      }
+      cachedAdminClients = await res.json();
+      renderAdminClientsList();
+    } catch (e) {
+      listEl.innerHTML = '<p style="font-family:-apple-system,sans-serif;color:#B3261E;">Erreur de chargement.</p>';
+    }
+  }
+
+  function renderAdminClientsList() {
+    const listEl = document.getElementById('adminClientsList');
+    const emptyEl = document.getElementById('adminClientsEmpty');
+    const searchInput = document.getElementById('adminClientsSearchInput');
+    const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+
+    const filtered = !query
+      ? cachedAdminClients
+      : cachedAdminClients.filter(c =>
+          (c.name || '').toLowerCase().includes(query) ||
+          (c.email || '').toLowerCase().includes(query)
+        );
+
+    if (!filtered.length) {
+      listEl.innerHTML = '';
+      emptyEl.style.display = 'block';
+      emptyEl.textContent = cachedAdminClients.length === 0
+        ? 'Aucun compte client pour le moment.'
+        : 'Aucun résultat pour cette recherche.';
+      return;
+    }
+    emptyEl.style.display = 'none';
+
+    listEl.innerHTML = filtered.map(c => {
+      const createdLabel = c.created_at
+        ? new Date(c.created_at.replace(' ', 'T') + 'Z').toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
+        : '';
+      return `
+        <div class="glass-card" style="padding:20px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h4 style="font-family:Georgia,serif;font-size:16px;font-weight:600;">${escapeHtml(c.name || '')}</h4>
+            <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);margin-top:4px;">${escapeHtml(c.email || '')}</p>
+            ${c.phone ? `<p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin-top:2px;">${escapeHtml(c.phone)}</p>` : ''}
+          </div>
+          <div style="text-align:right;">
+            ${createdLabel ? `<p style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--ink-500);">Compte créé le ${escapeHtml(createdLabel)}</p>` : ''}
+            ${c.synced_from_app ? '<p style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--gold-600,#A87C2E);font-weight:600;margin-top:4px;">Synchronisé via l\'app mobile</p>' : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
   async function loadAdminBookings() {
     const listEl = document.getElementById('adminBookingsList');
@@ -3700,17 +4024,74 @@
     }
   }
 
+  // ---------- Blocage de plusieurs dates en une seule intervention ----------
+  // Liste des dates (AAAA-MM-JJ) en attente d'envoi, construite en cliquant
+  // « + Ajouter » plusieurs fois avant de valider le blocage.
+  let pendingBlockDates = [];
+
+  function renderBlockDatesChips() {
+    const wrap = document.getElementById('blockDatesSelectedWrap');
+    const chipsEl = document.getElementById('blockDatesChips');
+    const countEl = document.getElementById('blockDatesCount');
+    countEl.textContent = pendingBlockDates.length;
+    if (pendingBlockDates.length === 0) {
+      wrap.style.display = 'none';
+      chipsEl.innerHTML = '';
+      return;
+    }
+    wrap.style.display = 'block';
+    const sorted = [...pendingBlockDates].sort();
+    chipsEl.innerHTML = sorted.map(d => {
+      const label = new Date(d + 'T00:00:00').toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `
+        <span style="display:inline-flex;align-items:center;gap:6px;background:var(--beige-100,#F5EFE6);border-radius:999px;padding:6px 8px 6px 14px;font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);">
+          ${escapeHtml(label)}
+          <button type="button" onclick="removeBlockDateFromList('${d}')" aria-label="Retirer cette date" style="width:20px;height:20px;border:none;background:rgba(0,0,0,0.08);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-500);font-size:13px;line-height:1;padding:0;">×</button>
+        </span>
+      `;
+    }).join('');
+  }
+
+  function handleAddDateToBlockList() {
+    const errorEl = document.getElementById('blockPeriodError');
+    errorEl.style.display = 'none';
+    const dateInput = document.getElementById('blockDateInput');
+    const value = dateInput.value;
+    if (!value) {
+      errorEl.textContent = 'Veuillez choisir une date avant de l\'ajouter à la liste.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!pendingBlockDates.includes(value)) {
+      pendingBlockDates.push(value);
+      renderBlockDatesChips();
+    }
+    dateInput.value = '';
+  }
+
+  function removeBlockDateFromList(value) {
+    pendingBlockDates = pendingBlockDates.filter(d => d !== value);
+    renderBlockDatesChips();
+  }
+
   async function handleAddBlockedPeriod() {
     const errorEl = document.getElementById('blockPeriodError');
     errorEl.style.display = 'none';
 
-    const blockedDate = document.getElementById('blockDateInput').value;
+    // Si une date est encore dans le champ sans avoir été ajoutée à la liste
+    // via « + Ajouter », on l'inclut quand même : la cliente ne doit pas
+    // perdre une date saisie simplement parce qu'elle a cliqué directement
+    // sur « Ajouter le blocage ».
+    const currentFieldDate = document.getElementById('blockDateInput').value;
+    let dates = [...pendingBlockDates];
+    if (currentFieldDate && !dates.includes(currentFieldDate)) dates.push(currentFieldDate);
+
     const startTime = document.getElementById('blockStartInput').value;
     const endTime = document.getElementById('blockEndInput').value;
     const reason = document.getElementById('blockReasonInput').value;
 
-    if (!blockedDate) {
-      errorEl.textContent = 'Veuillez choisir une date.';
+    if (dates.length === 0) {
+      errorEl.textContent = 'Veuillez choisir au moins une date.';
       errorEl.style.display = 'block';
       return;
     }
@@ -3719,16 +4100,18 @@
       const res = await fetch('/api/admin/blocked-periods', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blockedDate, startTime: startTime || null, endTime: endTime || null, reason }),
+        body: JSON.stringify({ blockedDates: dates, startTime: startTime || null, endTime: endTime || null, reason }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'ajout du blocage.');
 
+      pendingBlockDates = [];
+      renderBlockDatesChips();
       document.getElementById('blockDateInput').value = '';
       document.getElementById('blockStartInput').value = '';
       document.getElementById('blockEndInput').value = '';
       document.getElementById('blockReasonInput').value = '';
-      showToast('Blocage ajouté.');
+      showToast(data.count > 1 ? `${data.count} dates bloquées.` : 'Blocage ajouté.');
       loadAdminBlockedPeriods();
     } catch (e) {
       errorEl.textContent = e.message;
@@ -3847,57 +4230,66 @@
     }
   }
 
+  // Affichage public : charge et applique les deux emplacements de bannière
+  // indépendamment, chacun masqué si aucune image n'est configurée pour lui.
   async function loadPromoBanner() {
-    const sectionEl = document.getElementById('promoBannerSection');
     try {
       const res = await fetch('/api/promo-banner');
-      const data = await res.json();
-      if (data.active && data.imagePath) {
-        document.getElementById('promoBannerImage').src = data.imagePath;
-        document.getElementById('promoBannerLink').href = data.linkUrl || '#';
-        sectionEl.style.display = 'block';
-      } else {
-        sectionEl.style.display = 'none';
-      }
+      const banners = await res.json();
+      banners.forEach(data => {
+        const sectionEl = document.getElementById(`promoBannerSection${data.slot}`);
+        if (!sectionEl) return;
+        if (data.active && data.imagePath) {
+          document.getElementById(`promoBannerImage${data.slot}`).src = data.imagePath;
+          document.getElementById(`promoBannerLink${data.slot}`).href = data.linkUrl || '#';
+          sectionEl.style.display = 'block';
+        } else {
+          sectionEl.style.display = 'none';
+        }
+      });
     } catch (e) {
-      sectionEl.style.display = 'none';
+      document.getElementById('promoBannerSection1').style.display = 'none';
+      document.getElementById('promoBannerSection2').style.display = 'none';
     }
   }
 
-  // Chargement de l'état actuel pour le panneau admin
+  // Chargement de l'état actuel pour le panneau admin (les deux emplacements
+  // à la fois, puisque l'onglet affiche les deux cartes en même temps).
   async function loadAdminPromo() {
-    const previewWrap = document.getElementById('adminPromoPreviewWrap');
-    const previewImg = document.getElementById('adminPromoPreviewImage');
-    const emptyEl = document.getElementById('adminPromoEmpty');
-    const linkInput = document.getElementById('adminPromoLinkInput');
-    const msgEl = document.getElementById('adminPromoMessage');
-    msgEl.style.display = 'none';
+    for (const slot of [1, 2]) {
+      const previewWrap = document.getElementById(`adminPromoPreviewWrap${slot}`);
+      const previewImg = document.getElementById(`adminPromoPreviewImage${slot}`);
+      const emptyEl = document.getElementById(`adminPromoEmpty${slot}`);
+      const linkInput = document.getElementById(`adminPromoLinkInput${slot}`);
+      const msgEl = document.getElementById(`adminPromoMessage${slot}`);
+      msgEl.style.display = 'none';
 
-    try {
-      const res = await fetch('/api/promo-banner');
-      const data = await res.json();
+      try {
+        const res = await fetch(`/api/promo-banner?slot=${slot}`);
+        const data = await res.json();
 
-      linkInput.value = data.linkUrl || '';
+        linkInput.value = data.linkUrl || '';
 
-      if (data.imagePath) {
-        previewImg.src = data.imagePath;
-        previewWrap.style.display = 'block';
-        emptyEl.style.display = 'none';
-      } else {
-        previewWrap.style.display = 'none';
-        emptyEl.style.display = 'block';
+        if (data.imagePath) {
+          previewImg.src = data.imagePath;
+          previewWrap.style.display = 'block';
+          emptyEl.style.display = 'none';
+        } else {
+          previewWrap.style.display = 'none';
+          emptyEl.style.display = 'block';
+        }
+      } catch (e) {
+        msgEl.style.color = '#B3261E';
+        msgEl.textContent = 'Erreur de chargement.';
+        msgEl.style.display = 'block';
       }
-    } catch (e) {
-      msgEl.style.color = '#B3261E';
-      msgEl.textContent = 'Erreur de chargement.';
-      msgEl.style.display = 'block';
     }
   }
 
-  async function handleAdminPromoSave() {
-    const fileInput = document.getElementById('adminPromoFileInput');
-    const linkInput = document.getElementById('adminPromoLinkInput');
-    const msgEl = document.getElementById('adminPromoMessage');
+  async function handleAdminPromoSave(slot) {
+    const fileInput = document.getElementById(`adminPromoFileInput${slot}`);
+    const linkInput = document.getElementById(`adminPromoLinkInput${slot}`);
+    const msgEl = document.getElementById(`adminPromoMessage${slot}`);
     msgEl.style.display = 'none';
 
     try {
@@ -3905,6 +4297,7 @@
       if (fileInput.files && fileInput.files[0]) {
         const formData = new FormData();
         formData.append('image', fileInput.files[0]);
+        formData.append('slot', slot);
         const uploadRes = await fetch('/api/admin/promo-banner/image', {
           method: 'POST',
           body: formData,
@@ -3917,7 +4310,7 @@
       const linkRes = await fetch('/api/admin/promo-banner', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ linkUrl: linkInput.value.trim(), active: true }),
+        body: JSON.stringify({ slot, linkUrl: linkInput.value.trim(), active: true }),
       });
       const linkData = await linkRes.json();
       if (!linkRes.ok) throw new Error(linkData.error || 'Erreur lors de l\'enregistrement.');
@@ -3935,18 +4328,18 @@
     }
   }
 
-  async function handleAdminPromoDelete() {
-    const msgEl = document.getElementById('adminPromoMessage');
+  async function handleAdminPromoDelete(slot) {
+    const msgEl = document.getElementById(`adminPromoMessage${slot}`);
     msgEl.style.display = 'none';
     try {
-      const res = await fetch('/api/admin/promo-banner/image', { method: 'DELETE' });
+      const res = await fetch(`/api/admin/promo-banner/image?slot=${slot}`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression.');
 
       msgEl.style.color = 'var(--ink-700)';
       msgEl.textContent = 'La publicité a été retirée du site.';
       msgEl.style.display = 'block';
-      document.getElementById('adminPromoFileInput').value = '';
+      document.getElementById(`adminPromoFileInput${slot}`).value = '';
       loadAdminPromo();
       loadPromoBanner();
     } catch (err) {
