@@ -1110,19 +1110,30 @@
        le consentement doit résulter d'une action délibérée (case cochée +
        bouton cliqué), jamais d'une fermeture accidentelle. -->
   <div class="modal-overlay" id="consentOverlay">
-    <div class="modal-box" style="max-width:380px;box-sizing:border-box;">
-      <h3 class="modal-title" style="margin-bottom:14px;">Avant de créer votre compte</h3>
-      <p class="modal-sub" style="margin-bottom:18px;">
-        Vos renseignements servent uniquement à gérer votre compte et vos rendez-vous. Ils ne sont jamais vendus ni partagés à des fins publicitaires. Détails dans notre <a onclick="closeConsentModal(); showPage('confidentialite');" style="color:var(--gold-600,#A87C2E);cursor:pointer;text-decoration:underline;">politique de confidentialité</a>.
+    <div class="modal-box" style="max-width:360px;width:100%;box-sizing:border-box;text-align:center;padding:36px 28px 28px;">
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--beige-100);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+
+      <h3 class="modal-title" style="text-align:center;margin-bottom:10px;">Avant de créer votre compte</h3>
+      <p class="modal-sub" style="text-align:center;margin:0 auto 22px;max-width:280px;">
+        Vos renseignements servent uniquement à gérer votre compte et vos rendez-vous, et ne sont jamais vendus ni partagés à des fins publicitaires.
       </p>
-      <label style="display:flex;align-items:flex-start;gap:10px;font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);cursor:pointer;margin-bottom:16px;line-height:1.5;">
-        <input type="checkbox" id="consentCheckbox" style="margin-top:2px;flex-shrink:0;">
-        <span style="flex:1;min-width:0;">J'ai lu et j'accepte la politique de confidentialité.</span>
+
+      <p style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-500);margin:0 0 20px;">
+        Détails dans notre <a onclick="closeConsentModal(); showPage('confidentialite');" style="color:var(--gold-600);cursor:pointer;text-decoration:underline;font-weight:600;">politique de confidentialité</a>
+      </p>
+
+      <label style="display:flex;align-items:center;justify-content:center;gap:10px;font-family:-apple-system,sans-serif;font-size:13px;color:var(--ink-700);cursor:pointer;text-align:left;background:var(--beige-100);border-radius:12px;padding:14px 16px;margin-bottom:20px;">
+        <input type="checkbox" id="consentCheckbox" style="flex-shrink:0;width:18px;height:18px;margin:0;">
+        <span>J'ai lu et j'accepte la politique de confidentialité.</span>
       </label>
-      <p id="consentMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;color:#B3261E;margin-bottom:12px;"></p>
-      <div style="display:flex;gap:10px;">
-        <button class="btn btn-outline" style="flex:1;" onclick="closeConsentModal()">Annuler</button>
-        <button class="btn btn-default" style="flex:1;" onclick="handleConsentAccept()">J'accepte et je continue</button>
+
+      <p id="consentMessage" style="display:none;font-family:-apple-system,sans-serif;font-size:13px;color:#B3261E;margin-bottom:16px;"></p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-default btn-full" onclick="handleConsentAccept()">J'accepte et je continue</button>
+        <button class="btn btn-outline btn-full" onclick="closeConsentModal()">Annuler</button>
       </div>
     </div>
   </div>
